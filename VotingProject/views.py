@@ -14,10 +14,10 @@ def register(request):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print(username,email,password)
         myuser = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
         myuser.save()
         print("User is Created")
+        return redirect("success")
     return render(request,'register.html')
 
 def user_login(request):
@@ -41,3 +41,6 @@ def user_logout(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect('index')
+
+def success(request):
+    return render(request,'success.html')
