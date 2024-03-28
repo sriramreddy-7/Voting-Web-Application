@@ -33,7 +33,7 @@ def user_login(request):
     
 def user_dashboard(request):
     if request.user.is_authenticated:
-        return render(request, 'user_dashboard.html')
+        return render(request, 'dashboard/voter_dashboard.html')
     return redirect("index")
 
 
@@ -44,3 +44,6 @@ def user_logout(request):
 
 def success(request):
     return render(request,'success.html')
+
+def voter_register(request):
+    return render(request,'auth/voter_register.html')

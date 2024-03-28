@@ -20,13 +20,11 @@ from VotingProject import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('votinghome/', include('votinghome.urls')),
-    path('votingresult/', include('votingresult.urls')),
-    path('votingcontact/', include('votingcontact.urls')),
-    path('votingwebsite/', include('votingwebsite.urls')),
     path("",views.index,name="index"),
     path("register",views.register,name="register"),
     path("user_login",views.user_login,name="user_login"),
     path("user_dashboard",views.user_dashboard,name="user_dashboard"),
     path("user_logout",views.user_logout,name="user_logout"),
     path('success',views.success,name="success"),
+    path('voter_register',views.voter_register,name="voter_register"),
 ]
