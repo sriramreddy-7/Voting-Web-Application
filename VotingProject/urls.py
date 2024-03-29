@@ -27,4 +27,9 @@ urlpatterns = [
     path("user_logout",views.user_logout,name="user_logout"),
     path('success',views.success,name="success"),
     path('voter_register',views.voter_register,name="voter_register"),
+    path("trail",views.trail,name="trail"),
+    path('test2',views.test2,name='test2'),
+    path('voter_login',views.voter_login,name="voter_login"),
+    path('org_login',views.org_login,name="org_login"),
+    path('admin_login',views.admin_login,name="admin_login"),
 ]

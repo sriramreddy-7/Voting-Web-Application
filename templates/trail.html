@@ -1,0 +1,319 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voting Web Application</title>
+
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto"
+    />
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    
+  </head>
+  <body>
+    <header class="custom-header">
+      <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+          <a class="navbar-brand logo-text" href="#">Voting App</a>
+
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">How It Works</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="signupDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Sign Up
+                </a>
+                <div class="dropdown-menu" aria-labelledby="signupDropdown">
+                  <a class="dropdown-item" href="#" id="citizenSignup"
+                    >Citizen Sign Up</a
+                  >
+                  <a class="dropdown-item" href="#" id="organizerSignup"
+                    >Organization Sign Up</a
+                  >
+                </div>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="loginDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  Log In
+                </a>
+                <div class="dropdown-menu" aria-labelledby="loginDropdown">
+                  <a class="dropdown-item" href="#" id="adminLogin"
+                    >Admin Login</a
+                  >
+                  <a class="dropdown-item" href="#" id="citizenLogin"
+                    >Citizen Login</a
+                  >
+                  <a class="dropdown-item" href="#" id="organizerLogin"
+                    >Organization Login</a
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+    </header>
+<main> 
+    
+    <section class="hero-section">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <h1 class="hero-heading">Have Your Say - Vote with Ease!</h1>
+            <p class="hero-subheading">
+              Join our community and make your voice heard.
+            </p>
+            <a href="#" class="btn btn-primary btn-lg">Start Voting Now</a>
+          </div>
+          <div class="col-lg-6">
+            <!-- Placeholder for an image or illustration -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="about-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6">
+            <h2 class="section-heading">About Our Voting Web Application</h2>
+            <p class="section-description">
+              Our Voting Web Application is designed to empower individuals to
+              participate in important decision-making processes. Whether it's
+              elections, surveys, or feedback collection, our platform ensures
+              secure and transparent voting experiences for all users.
+            </p>
+            <p class="section-description">
+              Key features of our platform include:
+            </p>
+            <ul class="feature-list">
+              <li>Secure and encrypted voting process</li>
+              <li>User-friendly interface accessible on any device</li>
+              <li>Real-time results display</li>
+              <li>Customizable voting options</li>
+            </ul>
+          </div>
+          <div class="col-lg-6">
+            <!-- Placeholder for an image or illustration -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="how-it-works-section">
+      <div class="container">
+        <h2 class="section-heading text-center mb-5">How It Works</h2>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="step">
+              <div class="step-number">1</div>
+              <h3 class="step-title">Sign Up</h3>
+              <p class="step-description">
+                Create an account with your email address and password.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="step">
+              <div class="step-number">2</div>
+              <h3 class="step-title">Choose Your Vote</h3>
+              <p class="step-description">
+                Browse through available voting options and make your selection.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="step">
+              <div class="step-number">3</div>
+              <h3 class="step-title">Submit Your Vote</h3>
+              <p class="step-description">
+                Confirm your choice and submit your vote securely.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="testimonials-section">
+      <div class="container">
+        <h2 class="section-heading text-center mb-5">What Our Users Say</h2>
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="testimonial-item">
+              <div class="testimonial-content">
+                <p class="testimonial-text">
+                  "I love how easy it is to vote using this platform. It's
+                  intuitive and hassle-free!"
+                </p>
+              </div>
+              <div class="testimonial-author">
+                <img
+                  src="{% static 'assets/imgs/test1.png' %}"
+                  class="testimonial-avatar"
+                  alt="User Avatar"
+                />
+                <p class="testimonial-author-name">John Doe</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="testimonial-item">
+              <div class="testimonial-content">
+                <p class="testimonial-text">
+                  "This voting website is fantastic! The real-time results
+                  feature is impressive."
+                </p>
+              </div>
+              <div class="testimonial-author">
+                <img
+                  src="{% static 'assets/imgs/test2.png' %}"
+                  class="testimonial-avatar"
+                  alt="User Avatar"
+                />
+                <p class="testimonial-author-name">Jane Smith</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="testimonial-item">
+              <div class="testimonial-content">
+                <p class="testimonial-text">
+                  "I've used several voting platforms before, but this one
+                  stands out for its simplicity and reliability."
+                </p>
+              </div>
+              <div class="testimonial-author">
+                <img
+                  src="{% static 'assets/imgs/test3.png' %}"
+                  class="testimonial-avatar"
+                  alt="User Avatar"
+                />
+                <p class="testimonial-author-name">Michael Johnson</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="statistics-section">
+      <div class="container">
+        <h2 class="section-heading text-center mb-5">Voting Statistics</h2>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="statistic-item">
+              <h3 class="statistic-title">Total Votes</h3>
+              <p class="statistic-number">1,000</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="statistic-item">
+              <h3 class="statistic-title">Registered Users</h3>
+              <p class="statistic-number">500</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="statistic-item">
+              <h3 class="statistic-title">Active Elections</h3>
+              <p class="statistic-number">10</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+</main>
+    <section>
+      <footer class="footer-section">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-4">
+              <h4>Contact Us</h4>
+              <p>Email: contact@example.com</p>
+              <p>Phone: +1234567890</p>
+              <p>Address: 123 Main Street, City, Country</p>
+            </div>
+            <div class="col-lg-4">
+              <h4>Follow Us</h4>
+              <ul class="social-media-list">
+                <li>
+                  <a href="#"><i class="fab fa-facebook"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fab fa-twitter"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fab fa-instagram"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fab fa-linkedin"></i></a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-lg-4">
+              <h4>Legal</h4>
+              <ul class="legal-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

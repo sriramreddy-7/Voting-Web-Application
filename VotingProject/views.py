@@ -47,3 +47,21 @@ def success(request):
 
 def voter_register(request):
     return render(request,'auth/voter_register.html')
+
+
+def trail(request):
+    return render(request,'trail.html')
+
+
+def test2(request):
+    return render(request,'test2.html')
+
+def voter_login(request):
+    return render(request,'auth/voter_login.html')
+
+
+def org_login(request):
+    return render(request,'auth/org_login.html')
+
+def admin_login(request):
+    return render(request,'auth/admin_login.html')
