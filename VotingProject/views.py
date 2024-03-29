@@ -65,3 +65,20 @@ def org_login(request):
 
 def admin_login(request):
     return render(request,'auth/admin_login.html')
+
+
+def voter_dashboard(request):
+    return render(request,'dashboard/voter_dashboard.html')
+
+def org_register(request):
+    if request.method == "POST":
+        print(request.POST)
+        first_name = request.POST.get('org_name')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        myuser = User.objects.create_user(username=username, email=email, password=password, first_name=first_name)
+        myuser.save()
+        print("User is Created")
+        return redirect("success")
+    return render(request,'auth/org_register.html')

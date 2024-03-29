@@ -37,7 +37,9 @@
       <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark justify-content-end">
           <!-- Add justify-content-end class -->
-          <a class="navbar-brand logo-text" href="#">Voting App</a>
+          <a class="navbar-brand logo-text" href="{% url 'index' %}"
+            >Voting App</a
+          >
 
           <button
             class="navbar-toggler"
@@ -90,7 +92,10 @@
                     id="citizenSignup"
                     >Citizen Sign Up</a
                   >
-                  <a class="dropdown-item" href="#" id="organizerSignup"
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'org_register' %}"
+                    id="organizerSignup"
                     >Organization Sign Up</a
                   >
                 </div>
@@ -108,7 +113,10 @@
                   Log In
                 </a>
                 <div class="dropdown-menu" aria-labelledby="loginDropdown">
-                  <a class="dropdown-item" href="{% url 'admin_login' %}" id="adminLogin"
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'admin_login' %}"
+                    id="adminLogin"
                     >Admin Login</a
                   >
                   <a

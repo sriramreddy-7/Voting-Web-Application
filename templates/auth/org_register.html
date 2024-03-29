@@ -1,0 +1,45 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %} Voter Login {%endblock %} 
+{% block content %}
+<style>
+  .box
+  {
+    margin-top: 150px;
+    margin-bottom:90px;
+  }
+</style>
+<main>
+  <form class="box" action="{% url 'org_register' %}" method="post">
+    {% csrf_token %}
+      <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="signup-form">
+                  <!-- <i class="fas fa-users"></i> -->
+                    <h2 class="section-heading" style="text-align:center;"> <i class='fas fa-briefcase'></i> &nbsp;Organization Register</h2>
+                      <div class="form-group">
+                            <label for="signup-org_name">Organization Name</label>
+                            <input type="text" class="form-control" id="signup-org_name" name="org_name" placeholder="Enter Organization Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-username">Username</label>
+                            <input type="text" class="form-control" id="signup-username" name="username" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Organization Email address</label>
+                            <input type="email" class="form-control" id="signup-email" name="email" placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" class="form-control" id="signup-password"  name="password" placeholder="Password" required>
+                        </div>
+                        <center>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </center>
+                </div>
+          </div>
+  </form>
+</main>
+
+{% endblock %}
