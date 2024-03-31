@@ -33,5 +33,7 @@ urlpatterns = [
     path('org_login',views.org_login,name="org_login"),
     path('admin_login',views.admin_login,name="admin_login"),
     path('voter_dashboard',views.voter_dashboard,name="voter_dashboard"),
-    path('org_register',views.org_register,name="org_register"),
+    path('org_register',views.org_register,name="org_register"),\
+    path('admin_dashboard',views.admin_dashboard,name='admin_dashboard'),
+    path('<str:org_name>/org_dashboard/',views.org_dashboard,name='org_dashboard'),
 ]
