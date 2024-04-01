@@ -12,7 +12,7 @@
       href="https://getbootstrap.com/docs/5.3/assets/css/docs.css"
       rel="stylesheet"
     />
-    <title>Admin Dashboard</title>
+    <title>{{org.name}} Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link
       rel="stylesheet"
@@ -23,6 +23,10 @@
       href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
       rel="stylesheet"
     />
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body>
@@ -51,16 +55,19 @@
           >
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#"
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  href="{% url 'org_dashboard' org_name=org_name %}"
                   >Dashboard</a
                 >
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a class="nav-link" href="#">Features</a>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a class="nav-link" href="#">Pricing</a>
-              </li>
+              </li> -->
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle"
@@ -72,10 +79,54 @@
                   Poll
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><a class="dropdown-item" href="#">Create Poll</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
                   <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="/{{org.name}}/create_poll/"
+                      >Create Poll</a
+                    >
+                  </li>
+                  <li><a class="dropdown-item" href="#">Manage Poll</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">Results</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Survey
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li><a class="dropdown-item" href="#">Create Survey</a></li>
+                  <li><a class="dropdown-item" href="#">Manage Survey</a></li>
+                  <li>
+                    <a class="dropdown-item" href="#">Results</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Feedback
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li>
+                    <a class="dropdown-item" href="#">Create Feedback Sheet</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">Manage Feedback Sheet</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">Results</a>
                   </li>
                 </ul>
               </li>
@@ -94,12 +145,21 @@
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                   <li>
                     <a class="dropdown-item" href="{% url 'user_logout' %}"
-                      >Logout</a
+                      ><i class="fa fa-sign-out" aria-hidden="true"></i>
+                      &nbsp;Logout</a
                     >
                   </li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
                   <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
+                    <a class="dropdown-item" href="#"
+                      ><i class="fa fa-user" aria-hidden="true"></i>&nbsp;View
+                      Profile</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#"
+                      ><i class="fa fa-key" aria-hidden="true"></i>&nbsp;Change
+                      Password</a
+                    >
                   </li>
                 </ul>
               </li>
@@ -108,66 +168,6 @@
         </div>
       </nav>
     </section>
-    <section class="main">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-blue order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class="fa fa-cart-plus f-left"></i><span>486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-green order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class="fa fa-rocket f-left"></i><span> 486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-yellow order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class="fa fa-refresh f-left"></i><span>486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-pink order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class="fa fa-credit-card f-left"></i><span>486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    {% block content %}{% endblock %}
   </body>
 </html>

@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from accounts.models import Organization
+from django.shortcuts import get_object_or_404
+
 
 def index(request):
     return render(request, 'index.html')
@@ -119,5 +121,81 @@ def org_dashboard(request,org_name):
     username=request.user.username
     org=Organization.objects.get(admin__username=username)
     print(org)
-    context={'org':org}
-    return render(request,'dashboard/org_dashboard.html',context)
+    context={'org':org,'org_name': org_name}
+    return render(request,'org/org_dashboard.html',context)
+
+# def create_poll(request,org_name):
+#     username=request.user.username
+#     org=Organization.objects.get(admin__username=username)
+#     context={'org':org,'org_name': org_name}
+#     return render(request,'org/create_poll.html',context)
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from accounts.models import Poll, Choice, PollVote
+from django.utils import timezone
+
+@login_required
+def create_poll(request,org_name):
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    context={'org':org,'org_name': org_name}
+    if request.method == 'POST':
+        question = request.POST.get('question')
+        choices = request.POST.getlist('choice')
+
+        if question and choices:
+            poll = Poll.objects.create(question=question, start_time=timezone.now(), end_time=timezone.now(), admin=request.user)
+            for choice in choices:
+                Choice.objects.create(poll=poll, choice_text=choice)
+            return HttpResponse('Poll created successfully.')
+            # return redirect('poll')
+    return render(request,'org/create_poll.html',context)
+
+@login_required
+def poll_list(request):
+    polls = Poll.objects.all()
+    return render(request, 'poll_list.html', {'polls': polls})
+
+@login_required
+def vote(request, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    if request.method == 'POST':
+        choice_id = request.POST.get('choice')
+        choice = get_object_or_404(Choice, pk=choice_id)
+        if not Vote.objects.filter(user=request.user, poll=poll).exists():
+            Vote.objects.create(user=request.user, poll=poll, choice=choice)
+            return redirect('poll_results', poll_id=poll_id)
+        else:
+            return render(request, 'error.html', {'message': 'You have already voted in this poll.'})
+    return render(request, 'vote.html', {'poll': poll})
+
+@login_required
+def poll_results(request, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    votes = PollVote.objects.filter(poll=poll)
+    choices = poll.choice_set.all()
+    results = {choice.choice_text: votes.filter(choice=choice).count() for choice in choices}
+    return render(request, 'poll_results.html', {'poll': poll, 'results': results})
+
+
+from django.contrib import messages
+
+@login_required
+def vote(request, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    if request.method == 'POST':
+        choice_id = request.POST.get('choice')
+        choice = get_object_or_404(Choice, pk=choice_id)
+        
+        # Check if the user has already voted in this poll
+        if Vote.objects.filter(user=request.user, poll=poll).exists():
+            messages.error(request, "You have already voted in this poll.")
+            return redirect('poll_list')
+        
+        PollVote.objects.create(user=request.user, poll=poll, choice=choice)
+        return redirect('poll_results', poll_id=poll_id)
+    
+    return render(request, 'vote.html', {'poll': poll})
+

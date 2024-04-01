@@ -36,4 +36,5 @@ urlpatterns = [
     path('org_register',views.org_register,name="org_register"),\
     path('admin_dashboard',views.admin_dashboard,name='admin_dashboard'),
     path('<str:org_name>/org_dashboard/',views.org_dashboard,name='org_dashboard'),
+    path('<str:org_name>/create_poll/',views.create_poll,name='create_poll'),
 ]
