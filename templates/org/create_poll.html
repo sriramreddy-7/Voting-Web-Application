@@ -14,69 +14,63 @@
   }
 </style>
 <section class="main">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="card-header">
-            <h4 style="text-align: center">Create Poll</h4>
-          </div>
-          <div class="card-body">
-            <form id="create-poll-form" method="POST" action="/{{org_name}}/create_poll/">
-              {% csrf_token %}
-
-              <div class="form-group">
-                <label for="question">Polling Question:</label>
-                &nbsp;
-                <input
-                  type="text"
-                  class="form-control"
-                  id="question"
-                  name="question"
-                  placeholder="Enter Polling Question"
-                  required
-                />
-              </div>
-              &nbsp;
-              <div id="choices-container" class="form-group">
-                <label for="choices">Polling Choices:</label>
-                <div id="choices">
-                  <div class="input-group mb-3">
-                    <input
-                      type="text"
-                      class="form-control"
-                      name="choice"
-                      placeholder="Enter Polling Choice"
-                      required
-                    />
-                    <div class="input-group-append">
-                      <button type="button" class="btn btn-primary add-choice">
-                        Add
-                      </button>
-                      
-                      <button
-                        type="button"
-                        class="btn btn-danger delete-choice"
-                      >
-                        Delete
-                      </button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align: center">Create Poll</h4>
                     </div>
-                  </div>
-                </div>
-              </div>
+                    <div class="card-body">
+                        {% if messages %}
+                        <div class="alert alert-dismissible {% if messages.tags %}{{ messages.tags }}{% endif %}" role="alert">
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+                        <form id="create-poll-form" method="POST" action="/{{ org_name }}/create_poll/">
+                            {% csrf_token %}
 
-              <div style="text-align: center">
-                <button type="submit" class="btn btn-success">
-                  Create Poll
-                </button>
-              </div>
-            </form>
-          </div>
+                            <div class="form-group">
+                                <label for="question">Polling Question:</label>
+                                &nbsp;
+                                <input type="text" class="form-control" id="question" name="question" placeholder="Enter Polling Question" required />
+                            </div>
+                            &nbsp;
+                            <div id="choices-container" class="form-group">
+                                <label for="choices">Polling Choices:</label>
+                                <div id="choices">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" name="choice" placeholder="Enter Polling Choice" required />
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-primary add-choice">Add</button>
+                                            <button type="button" class="btn btn-danger delete-choice">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="text-align: center">
+                                <button type="submit" class="btn btn-success">Create Poll</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
+{% if messages %}
+<div class="container">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {

@@ -1,66 +1,6 @@
-{% extends 'org/org_base.html' %} {% block title %} Voting Statistics 
+{% extends 'org/org_base.html' %} {% block title %} Voting Statistics
 {%endblock%}
-<!-- <section class="main">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-blue order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class='fas fa-poll-h'></i><span>486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-green order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                 <i class="fas fa-poll"></i><span> 486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-yellow order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class="fa fa-refresh f-left"></i><span>486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-pink order-card">
-              <div class="card-block">
-                <h6 class="m-b-20">Orders Received</h6>
-                <h2 class="text-right">
-                  <i class="fa fa-credit-card f-left"></i><span>486</span>
-                </h2>
-                <p class="m-b-0">
-                  Completed Orders<span class="f-right">351</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section> -->
 {% block content %}
 <style>
   /* styles.css */
@@ -103,7 +43,6 @@
 
 <section class="statistics-section">
   <div class="container">
-    <!-- <h2 class="section-heading text-center mb-5">Voting Statistics</h2> -->
     <div class="row">
       <div class="col-md-4">
         <div class="statistic-item">
@@ -123,6 +62,49 @@
           <p class="statistic-number">{{ active_elections }}</p>
         </div>
       </div>
+    </div>
+
+   
+    <div class="row mt-5">
+      <div class="col-md-12">
+        <h3 class="section-subheading">Recent Polls</h3>
+        <ul class="list-group">
+          {% for poll in recent_polls %}
+          <li class="list-group-item">[{{forloop.counter}}]&nbsp;{{ poll.question }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Voter Verification Status -->
+    <div class="row mt-5">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title">Voter Status-Voters: {{ verified_voters }} / {{ total_voters }}</h3>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="recent-polls-section">
+  <div class="container">
+    <h2 class="section-heading mb-4">Recent Polls</h2>
+    <div class="row">
+      {% for poll in recent_polls %}
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title">{{ poll.question }}</h3>
+            <p class="card-text">Start Time: {{ poll.start_time }}</p>
+            <p class="card-text">End Time: {{ poll.end_time }}</p>
+            <a href="{% url 'poll_results' org_name=org_name poll_id=poll.id %}" class="btn btn-primary">View Results</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </section>

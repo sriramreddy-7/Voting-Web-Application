@@ -140,7 +140,9 @@
       {% endfor %}
     </tbody>
   </table>
-
+  <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="{{ total_votes }}" aria-valuemin="0" aria-valuemax="{{ total_votes }}">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: {{ total_votes }}%"></div>
+    </div>
   <div class="poll-details">
     <div class="container">
       <h2 class="section-heading text-center mb-5">Voting Statistics</h2>

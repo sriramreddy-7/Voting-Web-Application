@@ -11,10 +11,108 @@ from accounts.models import Poll, Choice, PollVote
 from django.db.models import Count
 from django.shortcuts import render
 from accounts.models import Poll, PollVote, Organization,Voter,Choice,PollVote
+from django.contrib import messages
 
 
 def index(request):
     return render(request, 'index.html')
+
+
+def voter_register(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        aadhar_number = request.POST['aadhar_number']
+        org_id = request.POST['org_name']  
+        role = request.POST['role']
+        id_number = request.POST['id']
+        department = request.POST['department']
+        id_proof = request.FILES['id_proof']
+        
+        if password1 != password2:
+            return render(request, 'auth/voter_register.html', {'error': 'Passwords do not match'})
+
+        user = User.objects.create_user(username=username, email=email, password=password1, first_name=first_name, last_name=last_name)
+        user.save()
+        organization = Organization.objects.get(pk=org_id)
+        voter = Voter.objects.create(user=user, organization=organization, aadhar_number=aadhar_number,
+                                     role=role, id_number=id_number, department=department, id_proof=id_proof)
+        voter.save()
+        messages.success(request, 'Voter registered successfully.')
+        return redirect('voter_login')
+    else:
+        org_name = Organization.objects.all()
+        context = {'org_name': org_name}
+        return render(request, 'auth/voter_register.html', context)
+
+
+def voter_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            voter = Voter.objects.get(user=user)
+            return redirect('voter_dashboard', voter_id=voter.id)
+        messages.error(request, 'Invalid credentials. Please try again!')
+        return render(request, 'auth/voter_login.html')
+    else:
+        return render(request, 'auth/voter_login.html')
+
+
+def org_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            org=Organization.objects.get(admin__username=username)
+            return redirect('org_dashboard', org_name=org.name)
+        messages.error(request, 'Invalid credentials. Please try again!')
+        return render(request,'auth/org_login.html')
+        # return render(request,'auth/org_login.html')
+    return render(request,'auth/org_login.html')
+
+
+
+def org_register(request):
+    if request.method == 'POST':
+        # Extracting form data from POST request
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        org_name = request.POST.get('org_name')
+        role = request.POST.get('role')
+        id_number = request.POST.get('id')
+        department = request.POST.get('department')
+        id_proof = request.FILES.get('id_proof')
+        username = request.POST.get('username')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        user = User.objects.create_user(username=username, email=email, first_name=first_name, last_name=last_name)
+        user.set_password(password1)
+        user.save()
+
+        organization = Organization.objects.create(
+            name=org_name,
+            admin=user,
+            role=role,
+            id_number=id_number,
+            department=department,
+            id_proof=id_proof
+        )
+        organization.save()
+        messages.success(request, 'Organization registered successfully.')
+        return redirect('org_login')
+    return render(request,'auth/org_register.html')
+
 
 def register(request):
     if request.method == "POST":
@@ -54,44 +152,7 @@ def user_logout(request):
 def success(request):
     return render(request,'success.html')
 
-def voter_register(request):
-    if request.method == 'POST':
-        # Extracting data from the POST request
-        username = request.POST['username']
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        aadhar_number = request.POST['aadhar_number']
-        org_id = request.POST['org_name']  
-        role = request.POST['role']
-        id_number = request.POST['id']
-        department = request.POST['department']
-        id_proof = request.FILES['id_proof']
-        
-        if password1 != password2:
-            return render(request, 'auth/voter_register.html', {'error': 'Passwords do not match'})
 
-        user = User.objects.create_user(username=username, email=email, password=password1, first_name=first_name, last_name=last_name)
-        user.save()
-
-        organization = Organization.objects.get(pk=org_id)
-        voter = Voter.objects.create(user=user, organization=organization, aadhar_number=aadhar_number,
-                                     role=role, id_number=id_number, department=department, id_proof=id_proof)
-        voter.save()
-        return HttpResponse('Voter registered successfully.')
-        # user = authenticate(request, username=username, password=password1)
-        # if user is not None:
-        #     login(request, user)
-        #     return redirect('home')  # Redirect to home page after successful registration
-        # else:
-        #     return redirect('login')  # Redirect to login page if login fails
-
-    else:
-        org_name = Organization.objects.all()
-        context = {'org_name': org_name}
-        return render(request, 'auth/voter_register.html', context)
 
 
 def trail(request):
@@ -101,31 +162,9 @@ def trail(request):
 def test2(request):
     return render(request,'test2.html')
 
-def voter_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            voter = Voter.objects.get(user=user)
-            return redirect('voter_dashboard', voter_id=voter.id)
-        return HttpResponse("Invalid email or password.")
-    else:
-        return render(request, 'auth/voter_login.html')
 
 
-def org_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            org=Organization.objects.get(admin__username=username)
-            return redirect('org_dashboard', org_name=org.name)
-        return HttpResponse("This is login")
-    return render(request,'auth/org_login.html')
+
 
 def admin_login(request):
     return render(request,'auth/admin_login.html')
@@ -158,35 +197,7 @@ def voter_dashboard(request, voter_id):
     
     return render(request, 'voter/voter_dashboard.html',context)
 
-def org_register(request):
-    if request.method == 'POST':
-        # Extracting form data from POST request
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        org_name = request.POST.get('org_name')
-        role = request.POST.get('role')
-        id_number = request.POST.get('id')
-        department = request.POST.get('department')
-        id_proof = request.FILES.get('id_proof')
-        username = request.POST.get('username')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
 
-        user = User.objects.create_user(username=username, email=email, first_name=first_name, last_name=last_name)
-        user.set_password(password1)
-        user.save()
-
-        organization = Organization.objects.create(
-            name=org_name,
-            admin=user,
-            role=role,
-            id_number=id_number,
-            department=department,
-            id_proof=id_proof
-        )
-
-    return render(request,'auth/org_register.html')
 
 
 def admin_dashboard(request):
@@ -199,11 +210,19 @@ def org_dashboard(request,org_name):
     total_votes = PollVote.objects.filter(poll__admin__organization=organization).count()
     registered_users = Voter.objects.filter(organization=organization).count()
     active_elections = Poll.objects.filter(admin__organization=organization).count()
+    recent_polls = Poll.objects.filter(admin__organization=organization).order_by('-start_time')[:5]
+
+    # Retrieve voter verification status
+    verified_voters = Voter.objects.filter(organization=organization, aadhar_number__isnull=False).count()
+    total_voters = registered_users
 
     print(org)
     context={'org':org,'org_name': org_name, 'total_votes': total_votes,
         'registered_users': registered_users,
-        'active_elections': active_elections }
+        'active_elections': active_elections,
+        'recent_polls': recent_polls,
+        'verified_voters': verified_voters,
+        'total_voters': total_voters,}
     return render(request,'org/org_dashboard.html',context)
 
 # def create_poll(request,org_name):
@@ -213,15 +232,13 @@ def org_dashboard(request,org_name):
 #     return render(request,'org/create_poll.html',context)
 
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 
 @login_required
-def create_poll(request,org_name):
-    username=request.user.username
-    org=Organization.objects.get(admin__username=username)
-    context={'org':org,'org_name': org_name}
+def create_poll(request, org_name):
+    username = request.user.username
+    org = Organization.objects.get(admin__username=username)
+    context = {'org': org, 'org_name': org_name}
+
     if request.method == 'POST':
         question = request.POST.get('question')
         choices = request.POST.getlist('choice')
@@ -230,9 +247,16 @@ def create_poll(request,org_name):
             poll = Poll.objects.create(question=question, start_time=timezone.now(), end_time=timezone.now(), admin=request.user)
             for choice in choices:
                 Choice.objects.create(poll=poll, choice_text=choice)
-            return HttpResponse('Poll created successfully.')
-            # return redirect('poll')
-    return render(request,'org/create_poll.html',context)
+            
+            # Add success message
+            messages.success(request, 'Poll created successfully.')
+            return redirect('poll')  # Replace 'poll' with the appropriate URL name
+        
+        # If the form data is invalid
+        messages.error(request, 'Failed to create poll. Please fill in all required fields.')
+    
+    return render(request, 'org/create_poll.html', context)
+
 
 @login_required
 def poll_list(request):
