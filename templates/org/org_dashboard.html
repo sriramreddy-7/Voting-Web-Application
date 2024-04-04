@@ -1,7 +1,6 @@
-{% extends 'org/org_base.html' %}
-{% block title %}{{org.name }} Dashboard{% endblock %}
-{% block content %}
-<section class="main">
+{% extends 'org/org_base.html' %} {% block title %} Voting Statistics 
+{%endblock%}
+<!-- <section class="main">
       <div class="container">
         <div class="row">
           <div class="col-md-4 col-xl-3">
@@ -61,5 +60,70 @@
           </div>
         </div>
       </div>
-    </section>
-  {% endblock %}
+    </section> -->
+{% block content %}
+<style>
+  /* styles.css */
+
+  .statistics-section {
+    background-color: #f9f9f9;
+    padding: 50px 0;
+  }
+
+  .statistics-section .section-heading {
+    color: #333;
+    margin-bottom: 30px;
+  }
+
+  .statistics-section .statistic-item {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .statistics-section .statistic-item:hover {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .statistics-section .statistic-title {
+    color: #666;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .statistics-section .statistic-number {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+  }
+</style>
+
+<section class="statistics-section">
+  <div class="container">
+    <!-- <h2 class="section-heading text-center mb-5">Voting Statistics</h2> -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="statistic-item">
+          <h3 class="statistic-title">Total Votes</h3>
+          <p class="statistic-number">{{ total_votes }}</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="statistic-item">
+          <h3 class="statistic-title">Registered Users</h3>
+          <p class="statistic-number">{{ registered_users }}</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="statistic-item">
+          <h3 class="statistic-title">Active Elections</h3>
+          <p class="statistic-number">{{ active_elections }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

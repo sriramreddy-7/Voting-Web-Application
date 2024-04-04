@@ -6,6 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from accounts.models import Organization,Voter
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from accounts.models import Poll, Choice, PollVote
+from django.db.models import Count
+from django.shortcuts import render
+from accounts.models import Poll, PollVote, Organization,Voter,Choice,PollVote
 
 
 def index(request):
@@ -130,7 +135,9 @@ def voter_dashboard(request, voter_id):
         voter = Voter.objects.select_related('organization').get(id=voter_id)
     except Voter.DoesNotExist:
         return HttpResponse("Voter does not exist.")
-
+    
+   
+    
     organization = voter.organization
     org_name = organization.name
     admin_username = organization.admin.username
@@ -138,8 +145,7 @@ def voter_dashboard(request, voter_id):
     id_number = organization.id_number
     department = organization.department
     id_proof_url = organization.id_proof.url if organization.id_proof else None
-    
-    return render(request, 'voter/voter_dashboard.html', {
+    context={
         'voter': voter,
         'org_name': org_name,
         'admin_username': admin_username,
@@ -147,7 +153,10 @@ def voter_dashboard(request, voter_id):
         'id_number': id_number,
         'department': department,
         'id_proof_url': id_proof_url,
-    })
+        
+    }
+    
+    return render(request, 'voter/voter_dashboard.html',context)
 
 def org_register(request):
     if request.method == 'POST':
@@ -186,8 +195,15 @@ def admin_dashboard(request):
 def org_dashboard(request,org_name):
     username=request.user.username
     org=Organization.objects.get(admin__username=username)
+    organization = Organization.objects.get(name=org_name)
+    total_votes = PollVote.objects.filter(poll__admin__organization=organization).count()
+    registered_users = Voter.objects.filter(organization=organization).count()
+    active_elections = Poll.objects.filter(admin__organization=organization).count()
+
     print(org)
-    context={'org':org,'org_name': org_name}
+    context={'org':org,'org_name': org_name, 'total_votes': total_votes,
+        'registered_users': registered_users,
+        'active_elections': active_elections }
     return render(request,'org/org_dashboard.html',context)
 
 # def create_poll(request,org_name):
@@ -199,7 +215,6 @@ def org_dashboard(request,org_name):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from accounts.models import Poll, Choice, PollVote
 from django.utils import timezone
 
 @login_required
@@ -242,12 +257,15 @@ def vote(request,org_name, poll_id):
     return render(request, 'org/poll_vote.html', context)
 
 @login_required
-def poll_results(request, poll_id):
+def poll_results(request,org_name,poll_id):
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    org_name=org.name
     poll = get_object_or_404(Poll, pk=poll_id)
     votes = PollVote.objects.filter(poll=poll)
     choices = poll.choice_set.all()
     results = {choice.choice_text: votes.filter(choice=choice).count() for choice in choices}
-    return render(request, 'poll_results.html', {'poll': poll, 'results': results})
+    return render(request, 'poll_results.html', {'poll': poll, 'results': results,'org':org,'org_name':org_name})
 
 
 # from django.contrib import messages
@@ -327,14 +345,14 @@ def voter_register(request):
     
     
 
-from django.http import JsonResponse
-from accounts.models import Poll, Choice, PollVote
 
-def poll_results(request,org_name,poll_id):
+
+def poll_results(request, org_name, poll_id):
     poll = Poll.objects.get(id=poll_id)
     choices = poll.choice_set.all()
     votes_data = []
 
+    # Count votes for each choice
     for choice in choices:
         votes_count = PollVote.objects.filter(poll=poll, choice=choice).count()
         votes_data.append({
@@ -342,16 +360,44 @@ def poll_results(request,org_name,poll_id):
             'votes_count': votes_count,
         })
 
+    # Count total votes
     total_votes = sum([data['votes_count'] for data in votes_data])
-    voters_count = poll.pollvote_set.count()
+
+    # Count total voters
+    voters_count = Voter.objects.filter(organization__name=org_name).count()
+
+    # Count casted voters
+    casted_voters = PollVote.objects.filter(poll=poll).values('user').distinct().count()
+
+    # Count voters who haven't casted their votes
+    remaining_voters = voters_count - casted_voters
+
+    # Get the list of voters who haven't casted their votes
+    org = Organization.objects.get(name=org_name)
+    voters = org.voter_set.all()
+    casted_voter_ids = PollVote.objects.filter(poll=poll).values_list('user__id', flat=True)
+    not_casted_voters = voters.exclude(user__id__in=casted_voter_ids)
+
+    # Order voters by those who have voted and those who haven't
+    voted_voters = Voter.objects.filter(id__in=casted_voter_ids)
+    voters_ordered = list(voted_voters) + list(not_casted_voters)
     username=request.user.username
     org=Organization.objects.get(admin__username=username)
-    org_name=org.name
-    context={'org':org,'org_name': org_name,'poll': poll,
+
+    context = {
+        'org':org,
+        'org_name': org_name,
+        'poll': poll,
         'votes_data': votes_data,
         'total_votes': total_votes,
-        'voters_count': voters_count,}
-    return render(request, 'org/poll_results.html',context)
+        'voters_count': voters_count,
+        'casted_voters': casted_voters,
+        'remaining_voters': remaining_voters,
+        'voters_ordered': voters_ordered,
+    }
+    return render(request, 'org/poll_results.html', context)
+
+
 
 
 

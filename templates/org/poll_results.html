@@ -1,12 +1,8 @@
-{% extends 'org/org_base.html' %} 
-{% block title %}
-    Poll Results Dashboard
-{% endblock %} 
-
-{% block content %}
+{% extends 'org/org_base.html' %} {% block title %} Poll Results Dashboard
+{%endblock %} {% block content %}
 <style>
   .poll-results {
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 20px;
   }
@@ -27,7 +23,8 @@
     margin-bottom: 20px;
   }
 
-  .poll-results .poll-results-table th, .poll-results .poll-results-table td {
+  .poll-results .poll-results-table th,
+  .poll-results .poll-results-table td {
     padding: 8px;
     border: 1px solid #ddd;
   }
@@ -49,13 +46,82 @@
   .poll-results p {
     margin-bottom: 10px;
   }
+  /* CSS for voters table */
+  .voters-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .voters-table th,
+  .voters-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  /* CSS for table header */
+  .voters-table th {
+    background-color: #f2f2f2;
+  }
+
+  /* CSS for table rows */
+  .voters-table tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .section-heading {
+    font-size: 28px;
+    color: #333;
+  }
+
+  .row {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  .col-md-3 {
+    width: 25%;
+    float: left;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .statistic-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .statistic-title {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .statistic-number {
+    font-size: 24px;
+    color: #333;
+    font-weight: bold;
+  }
 </style>
 
 <div class="poll-results">
-  <h1>{{ poll.question }}</h1>
+  <div class="card bg-info text-white">
+    <div class="card-body">
+      <h1 class="card-title">{{ poll.question }}</h1>
+    </div>
+  </div>
 
   <div class="chart-container">
-    <canvas id="pollChart"></canvas>
+    <canvas id="pollChart" width="100" height="25"></canvas>
   </div>
 
   <table class="poll-results-table">
@@ -75,15 +141,63 @@
     </tbody>
   </table>
 
-  <p>Total votes: {{ total_votes }}</p>
-  <p>Voters count: {{ voters_count }}</p>
-  <p>Voters casted: {{ voters_casted }}</p>
-  <p>Voters left to cast: {{ voters_left_to_cast }}</p>
-  <!-- Add other required details here -->
-
+  <div class="poll-details">
+    <div class="container">
+      <h2 class="section-heading text-center mb-5">Voting Statistics</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="statistic-item">
+            <h3 class="statistic-title">Total Votes</h3>
+            <p class="statistic-number">{{ total_votes }}</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="statistic-item">
+            <h3 class="statistic-title">Total Voters</h3>
+            <p class="statistic-number">{{ voters_count }}</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="statistic-item">
+            <h3 class="statistic-title">Casted Voters</h3>
+            <p class="statistic-number">{{ casted_voters }}</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="statistic-item">
+            <h3 class="statistic-title">Remaining</h3>
+            <p class="statistic-number">{{ remaining_voters }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>List of voters:</p>
+    <table class="voters-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Organization</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for voter in voters_ordered %}
+        <tr>
+          <td>{{ voter.user.username }}</td>
+          <td>{{ voter.organization.name }}</td>
+          <td>
+            {% if voter.id in casted_voter_ids %} Voted {% else %} Not Voted 
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <!-- Add any other required details -->
+  </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
   var ctx = document.getElementById('pollChart').getContext('2d');
   var data = {
@@ -110,10 +224,20 @@
           borderWidth: 1
       }]
   };
+  var options = {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  };
   var myChart = new Chart(ctx, {
-      type: 'pie',
+      type: 'bar', // Changed to bar chart
       data: data,
-      options: {}
+      options: options // Added options for y-axis ticks
   });
 </script>
+
 {% endblock %}
