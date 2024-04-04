@@ -1,57 +1,119 @@
 {% extends 'org/org_base.html' %} 
 {% block title %}
-    Poll Results
+    Poll Results Dashboard
 {% endblock %} 
 
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="path/to/your/styles.css">
+<style>
+  .poll-results {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
-    <h1>{{ poll.question }}</h1>
+  .poll-results h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
 
-    <div class="chart-container">
-        <canvas id="pollChart" width="400" height="400"></canvas>
-    </div>
+  .poll-results .chart-container {
+    margin-bottom: 20px;
+  }
 
-    <ul class="poll-results-list">
-        {% for data in votes_data %}
-            <li>{{ data.choice_text }}: {{ data.votes_count }}</li>
-        {% endfor %}
-    </ul>
+  .poll-results .poll-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
 
-    <p>Total votes: {{ total_votes }}</p>
-    <p>Voters count: {{ voters_count }}</p>
+  .poll-results .poll-results-table th, .poll-results .poll-results-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        var ctx = document.getElementById('pollChart').getContext('2d');
-        var data = {
-            labels: [{% for data in votes_data %}"{{ data.choice_text }}",{% endfor %}],
-            datasets: [{
-                label: 'Poll Results',
-                data: [{% for data in votes_data %}{{ data.votes_count }},{% endfor %}],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        };
-        var myChart = new Chart(ctx, {
-            type: 'pie',
-            data: data,
-            options: {}
-        });
-    </script>
+  .poll-results .poll-results-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+  }
+
+  .poll-results .poll-results-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .poll-results .poll-results-table tbody tr:hover {
+    background-color: #ddd;
+  }
+
+  .poll-results p {
+    margin-bottom: 10px;
+  }
+</style>
+
+<div class="poll-results">
+  <h1>{{ poll.question }}</h1>
+
+  <div class="chart-container">
+    <canvas id="pollChart"></canvas>
+  </div>
+
+  <table class="poll-results-table">
+    <thead>
+      <tr>
+        <th>Choice</th>
+        <th>Votes Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for data in votes_data %}
+      <tr>
+        <td>{{ data.choice_text }}</td>
+        <td>{{ data.votes_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p>Total votes: {{ total_votes }}</p>
+  <p>Voters count: {{ voters_count }}</p>
+  <p>Voters casted: {{ voters_casted }}</p>
+  <p>Voters left to cast: {{ voters_left_to_cast }}</p>
+  <!-- Add other required details here -->
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  var ctx = document.getElementById('pollChart').getContext('2d');
+  var data = {
+      labels: [{% for data in votes_data %}"{{ data.choice_text }}",{% endfor %}],
+      datasets: [{
+          label: 'Poll Results',
+          data: [{% for data in votes_data %}{{ data.votes_count }},{% endfor %}],
+          backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+      }]
+  };
+  var myChart = new Chart(ctx, {
+      type: 'pie',
+      data: data,
+      options: {}
+  });
+</script>
 {% endblock %}

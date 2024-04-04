@@ -97,7 +97,17 @@ def test2(request):
     return render(request,'test2.html')
 
 def voter_login(request):
-    return render(request,'auth/voter_login.html')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            voter = Voter.objects.get(user=user)
+            return redirect('voter_dashboard', voter_id=voter.id)
+        return HttpResponse("Invalid email or password.")
+    else:
+        return render(request, 'auth/voter_login.html')
 
 
 def org_login(request):
@@ -115,9 +125,29 @@ def org_login(request):
 def admin_login(request):
     return render(request,'auth/admin_login.html')
 
+def voter_dashboard(request, voter_id):
+    try:
+        voter = Voter.objects.select_related('organization').get(id=voter_id)
+    except Voter.DoesNotExist:
+        return HttpResponse("Voter does not exist.")
 
-def voter_dashboard(request):
-    return render(request,'dashboard/voter_dashboard.html')
+    organization = voter.organization
+    org_name = organization.name
+    admin_username = organization.admin.username
+    role = organization.role
+    id_number = organization.id_number
+    department = organization.department
+    id_proof_url = organization.id_proof.url if organization.id_proof else None
+    
+    return render(request, 'voter/voter_dashboard.html', {
+        'voter': voter,
+        'org_name': org_name,
+        'admin_username': admin_username,
+        'role': role,
+        'id_number': id_number,
+        'department': department,
+        'id_proof_url': id_proof_url,
+    })
 
 def org_register(request):
     if request.method == 'POST':
@@ -322,3 +352,78 @@ def poll_results(request,org_name,poll_id):
         'total_votes': total_votes,
         'voters_count': voters_count,}
     return render(request, 'org/poll_results.html',context)
+
+
+
+def active_polls_list(request,voter_id):
+    voter = Voter.objects.select_related('organization').get(id=voter_id)
+    # active_polls = Poll.objects.filter(start_time__lte=timezone.now(), end_time__gte=timezone.now())
+    active_polls = Poll.objects.all()
+    return render(request, 'voter/active_polls.html', {'active_polls': active_polls,'voter':voter})
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from accounts.models import Poll, Choice, PollVote
+from django.utils import timezone
+
+'''def vote_poll(request, voter_id, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    voter = get_object_or_404(Voter, pk=voter_id)
+    
+    # Check if the poll is active
+    # if poll.start_time <= timezone.now() <= poll.end_time:
+    
+    if request.method == 'POST':
+        choice_id = request.POST.get('choice')
+        choice = get_object_or_404(Choice, pk=choice_id)
+        
+        # Check if the user has already voted in this poll
+        if not PollVote.objects.filter(user=voter.user, poll=poll).exists():
+            PollVote.objects.create(user=voter.user, poll=poll, choice=choice)
+            message = 'Your vote has been recorded.'
+            context={
+                'message':message,
+            }
+            return render(request,'message.html',context) 
+        else:
+            message = 'You have already voted in this poll.'
+            context={
+                'message':message,
+            }
+            return render(request,'message.html',context)
+    else:
+        return render(request, 'voter/poll_voting.html', {'voter': voter, 'poll': poll})'''
+    # else:
+    #     return HttpResponse('This poll is not currently active.')
+    
+def vote_poll(request, voter_id, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    voter = get_object_or_404(Voter, pk=voter_id)
+    
+    # Check if the user has already voted in this poll
+    already_voted = PollVote.objects.filter(user=voter.user, poll=poll).exists()
+    
+    if request.method == 'POST' and not already_voted:
+        choice_id = request.POST.get('choice')
+        choice = get_object_or_404(Choice, pk=choice_id)
+        
+        # Check if the user has already voted in this poll
+        if not already_voted:
+            PollVote.objects.create(user=voter.user, poll=poll, choice=choice)
+            message = 'Your vote has been recorded.'
+        else:
+            message = 'You have already voted in this poll.'
+    else:
+        message = 'You have already voted in this poll.'
+
+    context = {
+        'voter': voter,
+        'poll': poll,
+        'already_voted': already_voted,
+        'message': message,
+    }
+    return render(request, 'voter/poll_voting.html', context)
+
+    
+    
+    

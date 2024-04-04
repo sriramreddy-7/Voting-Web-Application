@@ -1,0 +1,46 @@
+{% extends 'voter/voter_base.html' %}
+{% load static %}
+{% block title %}Vote in Poll {% endblock %}
+{% block content %}
+<div class="container">
+  {% if not already_voted %}
+  <h1 style="text-align: center; margin-top: 20px">Vote in Poll</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form
+        method="POST"
+        action="{% url 'vote_poll' voter_id=voter.id poll_id=poll.id %}"
+      >
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="poll_question" class="form-label">Poll Question:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="poll_question"
+            value="{{ poll.question }}"
+            readonly
+          />
+        </div>
+        <div class="mb-3">
+          <label for="choices" class="form-label">Select your choice:</label>
+          {% for choice in poll.choice_set.all %}
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="choice" id="choice{{ choice.id }}" value="{{ choice.id }}" required>
+            <label class="form-check-label" for="choice{{ choice.id }}">{{ choice.choice_text }}</label>
+          </div>
+          {% endfor %}
+        </div>
+        <center>
+          <button type="submit" class="btn btn-success">Vote</button>
+        </center>
+      </form>
+      {% else %}
+      <div style="text-align: center; padding-top: 150px; color: red">
+        <h3>{{ message }}</h3>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -32,7 +32,7 @@ urlpatterns = [
     path('voter_login',views.voter_login,name="voter_login"),
     path('org_login',views.org_login,name="org_login"),
     path('admin_login',views.admin_login,name="admin_login"),
-    path('voter_dashboard',views.voter_dashboard,name="voter_dashboard"),
+    path('<str:voter_id>/voter_dashboard',views.voter_dashboard,name="voter_dashboard"),
     path('org_register',views.org_register,name="org_register"),\
     path('admin_dashboard',views.admin_dashboard,name='admin_dashboard'),
     path('<str:org_name>/org_dashboard/',views.org_dashboard,name='org_dashboard'),
@@ -41,4 +41,10 @@ urlpatterns = [
     path('<str:org_name>/manage_poll_list/',views.manage_poll_list,name='manage_poll_list'),
     path('<str:org_name>/voter_list/',views.voter_list,name='voter_list'),
     path('<str:org_name>/poll/<int:poll_id>/results/', views.poll_results, name='poll_results'),
+    
+    ## voter urls
+    path('<str:voter_id>/voter_dashboard',views.voter_dashboard,name="voter_dashboard"),
+    path('<str:voter_id>/active_polls_list/', views.active_polls_list, name="active_polls_list"),
+    path('<str:voter_id>/<int:poll_id>/', views.vote_poll, name='vote_poll'),
+
 ]
