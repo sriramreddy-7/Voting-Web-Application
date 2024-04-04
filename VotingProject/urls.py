@@ -41,6 +41,7 @@ urlpatterns = [
     path('<str:org_name>/manage_poll_list/',views.manage_poll_list,name='manage_poll_list'),
     path('<str:org_name>/voter_list/',views.voter_list,name='voter_list'),
     path('<str:org_name>/poll/<int:poll_id>/results/', views.poll_results, name='poll_results'),
+    path('<str:org_name>/edit_poll/<int:poll_id>/', views.edit_poll, name='edit_poll'),
     
     ## voter urls
     path('<str:voter_id>/voter_dashboard',views.voter_dashboard,name="voter_dashboard"),

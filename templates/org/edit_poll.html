@@ -1,0 +1,98 @@
+{% extends 'org/org_base.html' %}
+{% block content %}
+<section class="main">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align: center">Edit Poll</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <form id="edit-poll-form" method="POST" action="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}">
+                            {% csrf_token %}
+                            <!-- Poll details -->
+                            <div class="form-group">
+                                <label for="start_time">Start Time:</label>
+                                <input type="datetime-local" class="form-control" id="start_time" name="start_time" required value="{{ poll.start_time }}" />
+                            </div>
+                            &nbsp;
+                            <div class="form-group">
+                                <label for="end_time">End Time:</label>
+                                <input type="datetime-local" class="form-control" id="end_time" name="end_time" required value="{{ poll.end_time }}" />
+                            </div>
+                            &nbsp;
+                            <div class="form-group">
+                                <label for="question">Polling Question:</label>
+                                <input type="text" class="form-control" id="question" name="question" placeholder="Enter Polling Question" required value="{{ poll.question }}" />
+                            </div>
+                            <input type="hidden" name="action" value="edit">
+                            &nbsp;
+                            <div style="text-align: center">
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> &nbsp;Save Changes</button>
+                            </div>
+                        </form>
+                        <br>
+                        <!-- Stop Poll -->
+                        {% if not poll.stopped %}
+                        <div style="text-align: center">
+                            <form method="POST" action="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="stop">
+                                <button type="submit" class="btn btn-warning"><i class="fa fa-close"></i> &nbsp;Stop Poll</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                        <br>
+
+                        <!-- Delete Poll -->
+                        <div style="text-align: center">
+                            <form method="POST" action="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <button type="submit" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> &nbsp; Delete Poll</button>
+                            </form>
+                        </div>
+                        &nbsp;
+                        <!-- Add new choice -->
+                        <div style="text-align: right;">
+                            <form method="POST" action="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="add_choice">
+                                <input type="text" name="new_choice" placeholder="Enter New Choice">
+                                <button type="submit" class="btn btn-success">Add Choice</button>
+                            </form>
+                        </div>
+
+                        <!-- Delete existing choices -->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Choice Text</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for choice in poll.choice_set.all %}
+                                <tr>
+                                    <td>{{ choice.choice_text }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_choice">
+                                            <input type="hidden" name="delete_choice" value="{{ choice.id }}">
+                                            <button type="submit" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i> </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

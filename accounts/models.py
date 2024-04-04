@@ -29,6 +29,7 @@ class Poll(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     admin = models.ForeignKey(User, on_delete=models.CASCADE)
+    stopped = models.BooleanField(default=False) 
 
     def __str__(self):
         return self.question

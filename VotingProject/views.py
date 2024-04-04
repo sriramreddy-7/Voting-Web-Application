@@ -294,6 +294,48 @@ def poll_results(request,org_name,poll_id):
     return render(request, 'poll_results.html', {'poll': poll, 'results': results,'org':org,'org_name':org_name})
 
 
+def edit_poll(request, org_name, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    org = Organization.objects.get(admin=request.user)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'edit':
+            poll.question = request.POST.get('question')
+            poll.start_time = request.POST.get('start_time')
+            poll.end_time = request.POST.get('end_time')
+            poll.save()
+            messages.success(request, 'Poll updated successfully.')
+        elif action == 'stop':
+            poll.stopped = True
+            poll.save()
+            messages.success(request, 'Poll stopped successfully.')
+        elif action == 'delete':
+            poll.delete()
+            messages.success(request, 'Poll deleted successfully.')
+            return redirect('dashboard')  
+        elif action == 'add_choice':
+            choice_text = request.POST.get('new_choice')
+            if choice_text:
+                Choice.objects.create(poll=poll, choice_text=choice_text)
+                messages.success(request, 'Choice added successfully.')
+            else:
+                messages.error(request, 'Enter a valid choice text.')
+        elif action == 'delete_choice':
+            choice_id = int(request.POST.get('delete_choice'))
+            choice = get_object_or_404(Choice, pk=choice_id)
+            choice.delete()
+            messages.success(request, 'Choice deleted successfully.')
+
+        return redirect('edit_poll', org_name=org_name, poll_id=poll_id)
+
+    context = {'org_name': org_name, 'poll': poll, 'org': org}
+    return render(request, 'org/edit_poll.html', context)
+
+
+
+
 # from django.contrib import messages
 
 # @login_required
