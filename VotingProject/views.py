@@ -343,10 +343,6 @@ def voter_register(request):
     #     context = {'org_name': org_name}
     #     return render(request, 'auth/voter_register.html', context)
     
-    
-
-
-
 def poll_results(request, org_name, poll_id):
     poll = Poll.objects.get(id=poll_id)
     choices = poll.choice_set.all()
