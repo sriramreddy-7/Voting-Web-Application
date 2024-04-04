@@ -32,7 +32,7 @@
       <th>{{ forloop.counter}}</th>
       <th>{{ poll.question }}</th>
       <th>
-        <a href="{% url 'vote' org_name=org_name poll_id=poll.id %}" class="btn btn-primary"
+        <a href="{% url 'org_vote_view' org_name=org_name poll_id=poll.id %}" class="btn btn-primary"
           ><i class="fa fa-eye" aria-hidden="true"></i
         >&nbsp;View</a> &nbsp;|&nbsp;
         <a href="{% url 'poll_results' org_name=org_name poll_id=poll.id %}" class="btn btn-success"><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp;Result</a>

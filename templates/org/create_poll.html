@@ -21,18 +21,32 @@
                     <div class="card-header">
                         <h4 style="text-align: center">Create Poll</h4>
                     </div>
-                    <div class="card-body">
-                        {% if messages %}
-                        <div class="alert alert-dismissible {% if messages.tags %}{{ messages.tags }}{% endif %}" role="alert">
-                            {% for message in messages %}
-                            {{ message }}
-                            {% endfor %}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        {% endif %}
-                        <form id="create-poll-form" method="POST" action="/{{ org_name }}/create_poll/">
-                            {% csrf_token %}
 
+                    <div class="card-body">
+                           <div class="container">
+{% if messages %}
+<div class="container">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+</div>
+<form id="create-poll-form" method="POST" action="/{{ org_name }}/create_poll/">
+                            {% csrf_token %}
+                      <div class="form-group">
+    <label for="start_time">Start Time:</label>
+    <input type="datetime-local" class="form-control" id="start_time" name="start_time" required min="{{ now }}" />
+</div>
+&nbsp;
+<div class="form-group">
+    <label for="end_time">End Time:</label>
+    <input type="datetime-local" class="form-control" id="end_time" name="end_time" required min="{{ now }}" />
+</div>
+&nbsp;
                             <div class="form-group">
                                 <label for="question">Polling Question:</label>
                                 &nbsp;
@@ -62,15 +76,7 @@
         </div>
     </div>
 </section>
-{% if messages %}
-<div class="container">
-  {% for message in messages %}
-  <div class="alert alert-{{ message.tags }}">
-    {{ message }}
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -116,5 +122,10 @@
       }
     });
   });
+   // Disable past dates in datetime-local inputs
+       // const now = new Date().toISOString().split("T")[0];
+        const now= "{{now}}";
+        document.getElementById("start_time").min = now;
+        document.getElementById("end_time").min = now;
 </script>
 {% endblock %}

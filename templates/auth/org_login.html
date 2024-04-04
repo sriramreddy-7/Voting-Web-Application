@@ -19,7 +19,6 @@ Login{%endblock %} {% block content %}
         </div>
     {% endfor %}
 {% endif %}
-
 </div>
   <form class="box" method="post" action="{% url 'org_login' %}">
     {% csrf_token %} 

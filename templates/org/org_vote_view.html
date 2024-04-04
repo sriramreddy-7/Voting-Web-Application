@@ -1,0 +1,30 @@
+{% extends 'org/org_base.html' %}
+{% load static %}
+{% block title %}Poll View {% endblock %}
+{% block content %}
+<div class="container">
+  <h1 style="text-align: center; margin-top: 20px">View Poll</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label for="poll_question" class="form-label">Poll Question:</label>
+        <input
+          type="text"
+          class="form-control"
+          id="poll_question"
+          value="{{ poll.question }}"
+          readonly
+        />
+      </div>
+      <div class="mb-3">
+        <label for="choices" class="form-label">Choices:</label>
+        <ul class="list-group">
+          {% for choice in poll.choice_set.all %}
+          <li class="list-group-item">{{ choice.choice_text }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

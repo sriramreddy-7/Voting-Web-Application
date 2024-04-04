@@ -12,6 +12,7 @@ from django.db.models import Count
 from django.shortcuts import render
 from accounts.models import Poll, PollVote, Organization,Voter,Choice,PollVote
 from django.contrib import messages
+from datetime import datetime
 
 
 def index(request):
@@ -57,7 +58,11 @@ def voter_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            voter = Voter.objects.get(user=user)
+            try:
+                voter = Voter.objects.get(user=user)
+            except :
+                messages.error(request, 'Invalid credentials. Please try again!')
+                return render(request, 'auth/voter_login.html')
             return redirect('voter_dashboard', voter_id=voter.id)
         messages.error(request, 'Invalid credentials. Please try again!')
         return render(request, 'auth/voter_login.html')
@@ -72,13 +77,16 @@ def org_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            org=Organization.objects.get(admin__username=username)
+            try:
+                org=Organization.objects.get(admin__username=username)
+            except:
+                messages.error(request, 'Invalid credentials. Please try again!')
+                return render(request,'auth/org_login.html')
             return redirect('org_dashboard', org_name=org.name)
         messages.error(request, 'Invalid credentials. Please try again!')
         return render(request,'auth/org_login.html')
         # return render(request,'auth/org_login.html')
     return render(request,'auth/org_login.html')
-
 
 
 def org_register(request):
@@ -237,7 +245,8 @@ def org_dashboard(request,org_name):
 def create_poll(request, org_name):
     username = request.user.username
     org = Organization.objects.get(admin__username=username)
-    context = {'org': org, 'org_name': org_name}
+    now = datetime.now().strftime('%Y-%m-%dT%H:%M')
+    context = {'org': org, 'org_name': org_name,'now':now}
 
     if request.method == 'POST':
         question = request.POST.get('question')
@@ -250,10 +259,11 @@ def create_poll(request, org_name):
             
             # Add success message
             messages.success(request, 'Poll created successfully.')
-            return redirect('poll')  # Replace 'poll' with the appropriate URL name
+            return redirect('create_poll', org_name=org.name)  # Replace 'poll' with the appropriate URL name
         
         # If the form data is invalid
         messages.error(request, 'Failed to create poll. Please fill in all required fields.')
+        return redirect('create_poll', org_name=org.name)
     
     return render(request, 'org/create_poll.html', context)
 
@@ -263,22 +273,14 @@ def poll_list(request):
     polls = Poll.objects.all()
     return render(request, 'poll_list.html', {'polls': polls})
 
+
 @login_required
-def vote(request,org_name, poll_id):
+def org_vote_view(request, org_name, poll_id):
     poll = get_object_or_404(Poll, pk=poll_id)
-    username=request.user.username
-    org=Organization.objects.get(admin__username=username)
-    context={'org':org,'org_name': org_name,'poll': poll}
-    if request.method == 'POST':
-        choice_id = request.POST.get('choice')
-        choice = get_object_or_404(Choice, pk=choice_id)
-        if not PollVote.objects.filter(user=request.user, poll=poll).exists():
-            PollVote.objects.create(user=request.user, poll=poll, choice=choice)
-            return HttpResponse('Your vote has been recorded.')
-            # return redirect('poll_results', poll_id=poll_id)
-        else:
-            return render(request, 'error.html', {'message': 'You have already voted in this poll.'})
-    return render(request, 'org/poll_vote.html', context)
+    username = request.user.username
+    org = Organization.objects.get(admin__username=username)
+    context = {'org': org, 'org_name': org_name, 'poll': poll}
+    return render(request, 'org/org_vote_view.html', context)
 
 @login_required
 def poll_results(request,org_name,poll_id):
