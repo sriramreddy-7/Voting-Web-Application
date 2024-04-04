@@ -1,52 +1,155 @@
-{% extends 'base.html' %} 
-{% load static %} 
-{% block title %} Voter Login {%endblock %} 
+{% extends 'base.html' %} {% load static %} 
+{% block title %} Voter Login {% endblock %} 
 {% block content %}
 <style>
-  .box
-  {
+  .box {
     margin-top: 150px;
-    margin-bottom:90px;
+    margin-bottom: 90px;
   }
 </style>
 <main>
-  <form class="box" method="post" action="{% url 'voter_register' }">
+  <form class="box" method="post" action="{% url 'voter_register' %}" enctype="multipart/form-data">
     {% csrf_token %}
-      <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="signup-form">
-                  <!-- <i class="fas fa-users"></i> -->
-                    <h2 class="section-heading" style="text-align:center;"> <i class="fas fa-users"></i>&nbsp;Citizen | Voter Registration</h2>
-                    
-                      <div class="form-group">
-                            <label for="signup-fname">First Name</label>
-                            <input type="text" class="form-control" id="signup-fname" name="first_name" placeholder="Enter First Name" required>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="signup-form">
+            <h2 class="section-heading" style="text-align: center">
+              <i class="fas fa-users"></i>&nbsp;Citizen | Voter Registration
+            </h2>
+            <h3>Personal Details</h3>
+            <div class="form-group">
+              <label for="signup-fname">First Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="signup-fname"
+                name="first_name"
+                placeholder="Enter First Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="signup-lname">Last Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="signup-lname"
+                name="last_name"
+                placeholder="Enter Last Name"
+                required
+              />
+            </div>
+                 <div class="form-group">
+              <label for="signup-email">Email address</label>
+              <input
+                type="email"
+                class="form-control"
+                id="signup-email"
+                name="email"
+                placeholder="Enter email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="aadhar-number">Aadhar Number</label>
+              <input
+                type="text"
+                class="form-control"
+                id="aadhar-number"
+                name="aadhar_number"
+                placeholder="Enter Aadhar Number"
+                maxlength="12"
+                required
+              />
+            </div>
+       
+                   
+                     <h3>Organization Details</h3>
+                        <div class="form-group">
+                            <label for="org_name">Organization Name</label>
+                            <select class="form-control" id="org_name" name="org_name" required>
+                                <option value="" selected disabled>Select Organization</option>
+                                {% for organization in org_name %}
+                                <option value="{{ organization.id }}">{{ organization.id }} | {{ organization.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    <div class="form-group">
+                        <label for="role">Role/Position</label>
+                        <input type="text" class="form-control" id="role" name="role" placeholder="Enter Role/Position" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="id">Student/Employee ID</label>
+                        <input type="text" class="form-control" id="id" name="id" placeholder="Enter Student/Employee ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department/Division</label>
+                        <input type="text" class="form-control" id="department" name="department" placeholder="Enter Department/Division">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_proof">Id Proof</label>
+                        <input type="file" class="form-control" id="id_proof" name="id_proof" placeholder="Upload the ID Proof">
+                    </div>
+                    <h3>Authentication Credentials</h3>
+            <div class="form-group">
+              <label for="signup-username">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="signup-username"
+                name="username"
+                placeholder="Enter username"
+                required
+              />
+            </div>
+           <div class="form-group">
+                            <label for="password1">Password</label>
+                            <input type="password" class="form-control" id="password1" name="password1"
+                                placeholder="Enter Password" required>
                         </div>
                         <div class="form-group">
-                            <label for="signup-lname">Last Name</label>
-                            <input type="text" class="form-control" id="signup-lname" name="last_name" placeholder="Enter Last Name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-username">Username</label>
-                            <input type="text" class="form-control" id="signup-userma,e" name="username" placeholder="Enter username" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-email">Email address</label>
-                            <input type="email" class="form-control" id="signup-email" name="email" placeholder="Enter email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="signup-password">Password</label>
-                            <input type="password" class="form-control" id="signup-password"  name="password" placeholder="Password" required>
+                            <label for="password2">Password</label>
+                            <input type="password" class="form-control" id="password2" name="password2"
+                                placeholder="Confirm Password" required>
                         </div>
                         <center>
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </center>
-                      
-                  
-                </div>
+              <button type="submit" class="btn btn-primary">Register</button>
+            </center>
+            </div>
+            
+            
           </div>
+        </div>
+      </div>
+    </div>
   </form>
 </main>
+<script>
+    function validatePassword() {
+        var password1 = document.getElementById("password1").value;
+        var password2 = document.getElementById("password2").value;
 
+        // Check if the passwords match
+        if (password1 != password2) {
+            alert("Passwords do not match.");
+            return false;
+        }
+
+        // Check if the password meets the minimum length requirement
+        if (password1.length < 8) {
+            alert("Password must be at least 8 characters long.");
+            return false;
+        }
+
+        // Check if the password meets the complexity requirement (optional)
+        var complexityRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+}{":;'?/>.<,])(?=.*[a-zA-Z]).{8,}$/;
+        if (!complexityRegex.test(password1)) {
+            alert("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
 {% endblock %}

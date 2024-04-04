@@ -1,94 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Voting Web App - Dashboard</title>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- Custom CSS -->
-    <style>
-      /* Custom styling for dashboard */
-      .dashboard-container {
-        padding: 20px;
-      }
-      .election-info {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-      }
-      .announcement {
-        background-color: #d1ecf1;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-      }
-      .quick-links {
-        list-style-type: none;
-        padding: 0;
-      }
-      .quick-links li {
-        margin-bottom: 10px;
-      }
-      .quick-links li a {
-        color: #007bff;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container dashboard-container">
-      <h2>Dashboard Overview</h2>
+{% extends 'org/org_base.html' %}
+{% block title %} {{org.name }} Dashboard{% endblock %}
+{% block content %}
+<section class="main">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-xl-3">
+            <div class="card bg-c-blue order-card">
+              <div class="card-block">
+                <h6 class="m-b-20">Orders Received</h6>
+                <h2 class="text-right">
+                  <i class='fas fa-poll-h'></i><span>486</span>
+                </h2>
+                <p class="m-b-0">
+                  Completed Orders<span class="f-right">351</span>
+                </p>
+              </div>
+            </div>
+          </div>
 
-      <!-- Election Information -->
-      <div class="election-info">
-        <h3>Current and Upcoming Elections</h3>
-        <p>
-          Here you can find information about the current and upcoming
-          elections:
-        </p>
-        <!-- Sample election details -->
-        <ul>
-          <li>Election Date: January 1, 2025</li>
-          <li>Election Type: Presidential Election</li>
-          <li>Location: [City, State]</li>
-        </ul>
+          <div class="col-md-4 col-xl-3">
+            <div class="card bg-c-green order-card">
+              <div class="card-block">
+                <h6 class="m-b-20">Orders Received</h6>
+                <h2 class="text-right">
+                 <i class="fas fa-poll"></i><span> 486</span>
+                </h2>
+                <p class="m-b-0">
+                  Completed Orders<span class="f-right">351</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-xl-3">
+            <div class="card bg-c-yellow order-card">
+              <div class="card-block">
+                <h6 class="m-b-20">Orders Received</h6>
+                <h2 class="text-right">
+                  <i class="fa fa-refresh f-left"></i><span>486</span>
+                </h2>
+                <p class="m-b-0">
+                  Completed Orders<span class="f-right">351</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-xl-3">
+            <div class="card bg-c-pink order-card">
+              <div class="card-block">
+                <h6 class="m-b-20">Orders Received</h6>
+                <h2 class="text-right">
+                  <i class="fa fa-credit-card f-left"></i><span>486</span>
+                </h2>
+                <p class="m-b-0">
+                  Completed Orders<span class="f-right">351</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <!-- Announcements -->
-      <div class="announcement">
-        <h3>Important Announcements</h3>
-        <p>
-          Stay informed with the latest announcements and notifications related
-          to voting:
-        </p>
-        <!-- Sample announcement -->
-        <p>
-          A new election schedule has been announced for the upcoming year. Make
-          sure to check your eligibility to vote.
-        </p>
-      </div>
-
-      <!-- Quick Links -->
-      <div>
-        <h3>Quick Links</h3>
-        <ul class="quick-links">
-          <li><a href="#profile">Profile Settings</a></li>
-          <li><a href="#election-info">Election Information</a></li>
-          <li><a href="#voting-process">Voting Process</a></li>
-          <li><a href="#results">Results and Statistics</a></li>
-          <li><a href="#feedback">Feedback and Support</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
-</html>
+    </section>
+  {% endblock %}

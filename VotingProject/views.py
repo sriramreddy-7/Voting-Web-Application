@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from accounts.models import Organization
+from accounts.models import Organization,Voter
 from django.shortcuts import get_object_or_404
 
 
@@ -50,7 +50,43 @@ def success(request):
     return render(request,'success.html')
 
 def voter_register(request):
-    return render(request,'auth/voter_register.html')
+    if request.method == 'POST':
+        # Extracting data from the POST request
+        username = request.POST['username']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        aadhar_number = request.POST['aadhar_number']
+        org_id = request.POST['org_name']  
+        role = request.POST['role']
+        id_number = request.POST['id']
+        department = request.POST['department']
+        id_proof = request.FILES['id_proof']
+        
+        if password1 != password2:
+            return render(request, 'auth/voter_register.html', {'error': 'Passwords do not match'})
+
+        user = User.objects.create_user(username=username, email=email, password=password1, first_name=first_name, last_name=last_name)
+        user.save()
+
+        organization = Organization.objects.get(pk=org_id)
+        voter = Voter.objects.create(user=user, organization=organization, aadhar_number=aadhar_number,
+                                     role=role, id_number=id_number, department=department, id_proof=id_proof)
+        voter.save()
+        return HttpResponse('Voter registered successfully.')
+        # user = authenticate(request, username=username, password=password1)
+        # if user is not None:
+        #     login(request, user)
+        #     return redirect('home')  # Redirect to home page after successful registration
+        # else:
+        #     return redirect('login')  # Redirect to login page if login fails
+
+    else:
+        org_name = Organization.objects.all()
+        context = {'org_name': org_name}
+        return render(request, 'auth/voter_register.html', context)
 
 
 def trail(request):
@@ -159,17 +195,21 @@ def poll_list(request):
     return render(request, 'poll_list.html', {'polls': polls})
 
 @login_required
-def vote(request, poll_id):
+def vote(request,org_name, poll_id):
     poll = get_object_or_404(Poll, pk=poll_id)
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    context={'org':org,'org_name': org_name,'poll': poll}
     if request.method == 'POST':
         choice_id = request.POST.get('choice')
         choice = get_object_or_404(Choice, pk=choice_id)
-        if not Vote.objects.filter(user=request.user, poll=poll).exists():
-            Vote.objects.create(user=request.user, poll=poll, choice=choice)
-            return redirect('poll_results', poll_id=poll_id)
+        if not PollVote.objects.filter(user=request.user, poll=poll).exists():
+            PollVote.objects.create(user=request.user, poll=poll, choice=choice)
+            return HttpResponse('Your vote has been recorded.')
+            # return redirect('poll_results', poll_id=poll_id)
         else:
             return render(request, 'error.html', {'message': 'You have already voted in this poll.'})
-    return render(request, 'vote.html', {'poll': poll})
+    return render(request, 'org/poll_vote.html', context)
 
 @login_required
 def poll_results(request, poll_id):
@@ -180,22 +220,105 @@ def poll_results(request, poll_id):
     return render(request, 'poll_results.html', {'poll': poll, 'results': results})
 
 
-from django.contrib import messages
+# from django.contrib import messages
 
-@login_required
-def vote(request, poll_id):
-    poll = get_object_or_404(Poll, pk=poll_id)
-    if request.method == 'POST':
-        choice_id = request.POST.get('choice')
-        choice = get_object_or_404(Choice, pk=choice_id)
+# @login_required
+# def vote(request, poll_id):
+#     poll = get_object_or_404(Poll, pk=poll_id)
+#     if request.method == 'POST':
+#         choice_id = request.POST.get('choice')
+#         choice = get_object_or_404(Choice, pk=choice_id)
         
-        # Check if the user has already voted in this poll
-        if Vote.objects.filter(user=request.user, poll=poll).exists():
-            messages.error(request, "You have already voted in this poll.")
-            return redirect('poll_list')
+#         # Check if the user has already voted in this poll
+#         if PollVote.objects.filter(user=request.user, poll=poll).exists():
+#             messages.error(request, "You have already voted in this poll.")
+#             return redirect('poll_list')
         
-        PollVote.objects.create(user=request.user, poll=poll, choice=choice)
-        return redirect('poll_results', poll_id=poll_id)
+#         PollVote.objects.create(user=request.user, poll=poll, choice=choice)
+#         return redirect('poll_results', poll_id=poll_id)
     
-    return render(request, 'vote.html', {'poll': poll})
+#     return render(request, 'org/poll_vote.html', {'poll': poll})
 
+def manage_poll_list(request,org_name):
+    polls = Poll.objects.filter(admin=request.user)
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    context={'org':org,'org_name': org_name,'polls':polls}
+    return render(request, 'org/manage_poll_list.html', context)
+
+
+def voter_list(request,org_name):
+    voters = Voter.objects.filter(organization__admin=request.user)
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    context={'org':org,'org_name': org_name,'voters':voters}
+    return render(request, 'org/voter_list.html', context)
+
+
+"""from faker import Faker
+import random
+
+fake = Faker()
+
+def voter_register(request):
+    # if request.method == 'POST':
+        # Generate fake data
+    for i in range(50):
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+        email = f"{first_name}{last_name}@mail.com".lower()
+        aadhar_number = ''.join([str(random.randint(0, 9)) for _ in range(12)])
+        org_id =1  # Assuming organization IDs are integers
+        role = fake.job()
+        id_number = fake.random_number(digits=5)
+        department = fake.job()
+        id_proof = None  # Assuming ID proof is not generated here
+
+        username = f"{first_name}{last_name}{id_number}"
+        password1=f"{first_name}{id_number}"
+        # You might want to add validation checks here for the generated data
+
+        # Perform the registration process
+        user = User.objects.create_user(username=username, email=email, password=password1, first_name=first_name, last_name=last_name)
+        user.save()
+        organization = Organization.objects.get(pk=org_id)
+        voter = Voter.objects.create(user=user, organization=organization, aadhar_number=aadhar_number,
+                                     role=role, id_number=id_number, department=department, id_proof=id_proof)
+        voter.save()
+        print(user)
+        print("--------------------------------------------------------------------------------------")
+        print(voter)
+    return HttpResponse('Voter registered successfully.')"""
+
+    # else:
+    #     org_name = Organization.objects.all()
+    #     context = {'org_name': org_name}
+    #     return render(request, 'auth/voter_register.html', context)
+    
+    
+
+from django.http import JsonResponse
+from accounts.models import Poll, Choice, PollVote
+
+def poll_results(request,org_name,poll_id):
+    poll = Poll.objects.get(id=poll_id)
+    choices = poll.choice_set.all()
+    votes_data = []
+
+    for choice in choices:
+        votes_count = PollVote.objects.filter(poll=poll, choice=choice).count()
+        votes_data.append({
+            'choice_text': choice.choice_text,
+            'votes_count': votes_count,
+        })
+
+    total_votes = sum([data['votes_count'] for data in votes_data])
+    voters_count = poll.pollvote_set.count()
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    org_name=org.name
+    context={'org':org,'org_name': org_name,'poll': poll,
+        'votes_data': votes_data,
+        'total_votes': total_votes,
+        'voters_count': voters_count,}
+    return render(request, 'org/poll_results.html',context)

@@ -37,4 +37,8 @@ urlpatterns = [
     path('admin_dashboard',views.admin_dashboard,name='admin_dashboard'),
     path('<str:org_name>/org_dashboard/',views.org_dashboard,name='org_dashboard'),
     path('<str:org_name>/create_poll/',views.create_poll,name='create_poll'),
+    path('<str:org_name>/vote/<str:poll_id>/',views.vote,name='vote'),
+    path('<str:org_name>/manage_poll_list/',views.manage_poll_list,name='manage_poll_list'),
+    path('<str:org_name>/voter_list/',views.voter_list,name='voter_list'),
+    path('<str:org_name>/poll/<int:poll_id>/results/', views.poll_results, name='poll_results'),
 ]
