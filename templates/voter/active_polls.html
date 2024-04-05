@@ -1,9 +1,12 @@
 {% extends 'voter/voter_base.html' %} 
 {% load static %}
 {% block title %}Active Polls {% endblock %}  
-{% block content %}
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
 <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+{% block content %}
+
+
 <style>
   table {
     font-family: arial, sans-serif;
@@ -22,10 +25,20 @@
     background-color: #dddddd;
   }
 </style>
-<body>
-  <h1 style="text-align:center">Active Polls</h1>
-  <div class="container">
 
+  <h1 style="text-align:center">Active Polls</h1>
+  {% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+           
+        </div>
+    {% endfor %}
+{% endif %}
+  <div class="container">
+      <div class="container">
+
+      </div>
   <table class="table table-hover">
     <tr>
       <th>S.No</th>
@@ -37,10 +50,13 @@
     </tr>
     <td>{{ forloop.counter}}</td>
     <td>{{ poll.question }}</td>
-    <td><a href="{% url 'vote_poll' voter_id=voter.id poll_id=poll.id %}" class="btn btn-warning"><i class='fas fa-vote-yea'></i>Vote</a></td>
+    <td><a href="{% url 'vote_poll' voter_id=voter.id poll_id=poll.id %}" class="btn btn-warning"><i class='fas fa-vote-yea' ></i>Vote</a>
+    &nbsp; | &nbsp; <a href="{% url 'voter_poll_results' voter_id=voter.id poll_id=poll.id %}" class="btn btn-success"><i class='fas fa-vote-yea' ></i>Results</a>
+  </td>
       </tr>
     {% endfor %}
 
   </table>
-</body>
+  </div>
+
 {% endblock %}

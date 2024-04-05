@@ -32,7 +32,7 @@ def voter_register(request):
         role = request.POST['role']
         id_number = request.POST['id']
         department = request.POST['department']
-        id_proof = request.FILES['id_proof']
+     
         
         if password1 != password2:
             return render(request, 'auth/voter_register.html', {'error': 'Passwords do not match'})
@@ -41,7 +41,7 @@ def voter_register(request):
         user.save()
         organization = Organization.objects.get(pk=org_id)
         voter = Voter.objects.create(user=user, organization=organization, aadhar_number=aadhar_number,
-                                     role=role, id_number=id_number, department=department, id_proof=id_proof)
+                                     role=role, id_number=id_number, department=department,)
         voter.save()
         messages.success(request, 'Voter registered successfully.')
         return redirect('voter_login')
@@ -99,7 +99,6 @@ def org_register(request):
         role = request.POST.get('role')
         id_number = request.POST.get('id')
         department = request.POST.get('department')
-        id_proof = request.FILES.get('id_proof')
         username = request.POST.get('username')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
@@ -114,7 +113,7 @@ def org_register(request):
             role=role,
             id_number=id_number,
             department=department,
-            id_proof=id_proof
+          
         )
         organization.save()
         messages.success(request, 'Organization registered successfully.')
@@ -177,21 +176,20 @@ def test2(request):
 def admin_login(request):
     return render(request,'auth/admin_login.html')
 
-def voter_dashboard(request, voter_id):
+def voter_dashboard(request,voter_id):
     try:
         voter = Voter.objects.select_related('organization').get(id=voter_id)
     except Voter.DoesNotExist:
         return HttpResponse("Voter does not exist.")
-    
-   
-    
+
+    recent_votes = PollVote.objects.filter(user=voter.user).order_by('-id')[:5]
     organization = voter.organization
     org_name = organization.name
     admin_username = organization.admin.username
     role = organization.role
     id_number = organization.id_number
     department = organization.department
-    id_proof_url = organization.id_proof.url if organization.id_proof else None
+   
     context={
         'voter': voter,
         'org_name': org_name,
@@ -199,7 +197,7 @@ def voter_dashboard(request, voter_id):
         'role': role,
         'id_number': id_number,
         'department': department,
-        'id_proof_url': id_proof_url,
+        'recent_votes': recent_votes,  
         
     }
     
@@ -220,7 +218,6 @@ def org_dashboard(request,org_name):
     active_elections = Poll.objects.filter(admin__organization=organization).count()
     recent_polls = Poll.objects.filter(admin__organization=organization).order_by('-start_time')[:5]
 
-    # Retrieve voter verification status
     verified_voters = Voter.objects.filter(organization=organization, aadhar_number__isnull=False).count()
     total_voters = registered_users
 
@@ -233,12 +230,15 @@ def org_dashboard(request,org_name):
         'total_voters': total_voters,}
     return render(request,'org/org_dashboard.html',context)
 
-# def create_poll(request,org_name):
-#     username=request.user.username
-#     org=Organization.objects.get(admin__username=username)
-#     context={'org':org,'org_name': org_name}
-#     return render(request,'org/create_poll.html',context)
 
+
+def org_profile_view(request, org_name):
+    organization = get_object_or_404(Organization, name=org_name)
+    username=request.user.username
+    org=Organization.objects.get(admin__username=username)
+    
+    context = {'organization': organization,'org':org,'org_name': org_name}
+    return render(request, 'org/organization_profile.html', context)
 
 
 @login_required
@@ -251,17 +251,17 @@ def create_poll(request, org_name):
     if request.method == 'POST':
         question = request.POST.get('question')
         choices = request.POST.getlist('choice')
-
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
         if question and choices:
-            poll = Poll.objects.create(question=question, start_time=timezone.now(), end_time=timezone.now(), admin=request.user)
+            poll = Poll.objects.create(question=question, start_time=start_time, end_time=end_time, admin=request.user)
             for choice in choices:
                 Choice.objects.create(poll=poll, choice_text=choice)
             
-            # Add success message
+            
             messages.success(request, 'Poll created successfully.')
-            return redirect('create_poll', org_name=org.name)  # Replace 'poll' with the appropriate URL name
+            return redirect('create_poll', org_name=org.name)  
         
-        # If the form data is invalid
         messages.error(request, 'Failed to create poll. Please fill in all required fields.')
         return redirect('create_poll', org_name=org.name)
     
@@ -297,7 +297,8 @@ def poll_results(request,org_name,poll_id):
 def edit_poll(request, org_name, poll_id):
     poll = get_object_or_404(Poll, pk=poll_id)
     org = Organization.objects.get(admin=request.user)
-
+    now = datetime.now().strftime('%Y-%m-%dT%H:%M')
+    
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -307,14 +308,21 @@ def edit_poll(request, org_name, poll_id):
             poll.end_time = request.POST.get('end_time')
             poll.save()
             messages.success(request, 'Poll updated successfully.')
+            return redirect('manage_poll_list', org_name=org_name)
         elif action == 'stop':
             poll.stopped = True
             poll.save()
             messages.success(request, 'Poll stopped successfully.')
+            return redirect('manage_poll_list', org_name=org_name)
+        elif action=='enable':
+            poll.stopped = False
+            poll.save()
+            messages.success(request, 'Poll enabled successfully.')
+            return redirect('manage_poll_list', org_name=org_name)
         elif action == 'delete':
             poll.delete()
             messages.success(request, 'Poll deleted successfully.')
-            return redirect('dashboard')  
+            return redirect('manage_poll_list', org_name=org_name)
         elif action == 'add_choice':
             choice_text = request.POST.get('new_choice')
             if choice_text:
@@ -330,30 +338,9 @@ def edit_poll(request, org_name, poll_id):
 
         return redirect('edit_poll', org_name=org_name, poll_id=poll_id)
 
-    context = {'org_name': org_name, 'poll': poll, 'org': org}
+    context = {'org_name': org_name, 'poll': poll, 'org': org,'now':now}
     return render(request, 'org/edit_poll.html', context)
 
-
-
-
-# from django.contrib import messages
-
-# @login_required
-# def vote(request, poll_id):
-#     poll = get_object_or_404(Poll, pk=poll_id)
-#     if request.method == 'POST':
-#         choice_id = request.POST.get('choice')
-#         choice = get_object_or_404(Choice, pk=choice_id)
-        
-#         # Check if the user has already voted in this poll
-#         if PollVote.objects.filter(user=request.user, poll=poll).exists():
-#             messages.error(request, "You have already voted in this poll.")
-#             return redirect('poll_list')
-        
-#         PollVote.objects.create(user=request.user, poll=poll, choice=choice)
-#         return redirect('poll_results', poll_id=poll_id)
-    
-#     return render(request, 'org/poll_vote.html', {'poll': poll})
 
 def manage_poll_list(request,org_name):
     polls = Poll.objects.filter(admin=request.user)
@@ -370,53 +357,13 @@ def voter_list(request,org_name):
     context={'org':org,'org_name': org_name,'voters':voters}
     return render(request, 'org/voter_list.html', context)
 
-
-"""from faker import Faker
-import random
-
-fake = Faker()
-
-def voter_register(request):
-    # if request.method == 'POST':
-        # Generate fake data
-    for i in range(50):
-        first_name = fake.first_name()
-        last_name = fake.last_name()
-        email = f"{first_name}{last_name}@mail.com".lower()
-        aadhar_number = ''.join([str(random.randint(0, 9)) for _ in range(12)])
-        org_id =1  # Assuming organization IDs are integers
-        role = fake.job()
-        id_number = fake.random_number(digits=5)
-        department = fake.job()
-        id_proof = None  # Assuming ID proof is not generated here
-
-        username = f"{first_name}{last_name}{id_number}"
-        password1=f"{first_name}{id_number}"
-        # You might want to add validation checks here for the generated data
-
-        # Perform the registration process
-        user = User.objects.create_user(username=username, email=email, password=password1, first_name=first_name, last_name=last_name)
-        user.save()
-        organization = Organization.objects.get(pk=org_id)
-        voter = Voter.objects.create(user=user, organization=organization, aadhar_number=aadhar_number,
-                                     role=role, id_number=id_number, department=department, id_proof=id_proof)
-        voter.save()
-        print(user)
-        print("--------------------------------------------------------------------------------------")
-        print(voter)
-    return HttpResponse('Voter registered successfully.')"""
-
-    # else:
-    #     org_name = Organization.objects.all()
-    #     context = {'org_name': org_name}
-    #     return render(request, 'auth/voter_register.html', context)
-    
+   
 def poll_results(request, org_name, poll_id):
     poll = Poll.objects.get(id=poll_id)
     choices = poll.choice_set.all()
     votes_data = []
 
-    # Count votes for each choice
+   
     for choice in choices:
         votes_count = PollVote.objects.filter(poll=poll, choice=choice).count()
         votes_data.append({
@@ -424,25 +371,22 @@ def poll_results(request, org_name, poll_id):
             'votes_count': votes_count,
         })
 
-    # Count total votes
+    
     total_votes = sum([data['votes_count'] for data in votes_data])
 
-    # Count total voters
+   
     voters_count = Voter.objects.filter(organization__name=org_name).count()
 
-    # Count casted voters
-    casted_voters = PollVote.objects.filter(poll=poll).values('user').distinct().count()
 
-    # Count voters who haven't casted their votes
+    casted_voters = PollVote.objects.filter(poll=poll).values('user').distinct().count()
     remaining_voters = voters_count - casted_voters
 
-    # Get the list of voters who haven't casted their votes
     org = Organization.objects.get(name=org_name)
     voters = org.voter_set.all()
     casted_voter_ids = PollVote.objects.filter(poll=poll).values_list('user__id', flat=True)
     not_casted_voters = voters.exclude(user__id__in=casted_voter_ids)
 
-    # Order voters by those who have voted and those who haven't
+   
     voted_voters = Voter.objects.filter(id__in=casted_voter_ids)
     voters_ordered = list(voted_voters) + list(not_casted_voters)
     username=request.user.username
@@ -463,77 +407,77 @@ def poll_results(request, org_name, poll_id):
 
 
 
+from django.utils import timezone
 
-
-def active_polls_list(request,voter_id):
+def active_polls_list(request, voter_id):
     voter = Voter.objects.select_related('organization').get(id=voter_id)
-    # active_polls = Poll.objects.filter(start_time__lte=timezone.now(), end_time__gte=timezone.now())
-    active_polls = Poll.objects.all()
-    return render(request, 'voter/active_polls.html', {'active_polls': active_polls,'voter':voter})
+    organization = voter.organization
+    org_name = organization.name
+    
+   
+    current_time = timezone.now()
+    active_polls = Poll.objects.filter(
+        start_time__lte=current_time,
+        end_time__gte=current_time,
+        admin=organization.admin  
+    )
+    
+    context = {'active_polls': active_polls, 'voter': voter, 'org': organization, 'org_name': org_name}
+    return render(request, 'voter/active_polls.html', context)
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from accounts.models import Poll, Choice, PollVote
 from django.utils import timezone
 
-'''def vote_poll(request, voter_id, poll_id):
-    poll = get_object_or_404(Poll, pk=poll_id)
-    voter = get_object_or_404(Voter, pk=voter_id)
-    
-    # Check if the poll is active
-    # if poll.start_time <= timezone.now() <= poll.end_time:
-    
-    if request.method == 'POST':
-        choice_id = request.POST.get('choice')
-        choice = get_object_or_404(Choice, pk=choice_id)
-        
-        # Check if the user has already voted in this poll
-        if not PollVote.objects.filter(user=voter.user, poll=poll).exists():
-            PollVote.objects.create(user=voter.user, poll=poll, choice=choice)
-            message = 'Your vote has been recorded.'
-            context={
-                'message':message,
-            }
-            return render(request,'message.html',context) 
-        else:
-            message = 'You have already voted in this poll.'
-            context={
-                'message':message,
-            }
-            return render(request,'message.html',context)
-    else:
-        return render(request, 'voter/poll_voting.html', {'voter': voter, 'poll': poll})'''
-    # else:
-    #     return HttpResponse('This poll is not currently active.')
+   
     
 def vote_poll(request, voter_id, poll_id):
     poll = get_object_or_404(Poll, pk=poll_id)
     voter = get_object_or_404(Voter, pk=voter_id)
-    
-    # Check if the user has already voted in this poll
     already_voted = PollVote.objects.filter(user=voter.user, poll=poll).exists()
-    
-    if request.method == 'POST' and not already_voted:
-        choice_id = request.POST.get('choice')
-        choice = get_object_or_404(Choice, pk=choice_id)
-        
-        # Check if the user has already voted in this poll
-        if not already_voted:
-            PollVote.objects.create(user=voter.user, poll=poll, choice=choice)
-            message = 'Your vote has been recorded.'
-        else:
-            message = 'You have already voted in this poll.'
-    else:
-        message = 'You have already voted in this poll.'
-
     context = {
         'voter': voter,
         'poll': poll,
         'already_voted': already_voted,
-        'message': message,
     }
+
+    if request.method == 'POST' and not already_voted:
+        choice_id = request.POST.get('choice')
+        choice = get_object_or_404(Choice, pk=choice_id)
+        PollVote.objects.create(user=voter.user, poll=poll, choice=choice)
+        messages.success(request, 'Your vote has been recorded.')
+        return redirect('active_polls_list', voter_id=voter.id)
+    elif already_voted:
+        messages.error(request, 'You have already voted in this poll.')
     return render(request, 'voter/poll_voting.html', context)
 
     
     
+@login_required
+def voter_poll_results(request, voter_id, poll_id):
+    poll = get_object_or_404(Poll, pk=poll_id)
+    voter = get_object_or_404(Voter, pk=voter_id)
     
+    
+    has_voted = PollVote.objects.filter(user=voter.user, poll=poll).exists()
+    
+    
+    voters_in_organization = Voter.objects.filter(organization=voter.organization)
+    
+    
+    voters_ordered = []
+    casted_voter_ids = set(PollVote.objects.filter(poll=poll).values_list('user__id', flat=True))
+    for voter_in_org in voters_in_organization:
+        voters_ordered.append({
+            'user': voter_in_org.user.username,
+            'organization': voter_in_org.organization.name,
+            'status': 'Voted' if voter_in_org.id in casted_voter_ids else 'Not Voted'
+        })
+    
+    return render(request, 'voter/voter_poll_results.html', {
+        'poll': poll,
+        'voter': voter,
+        'has_voted': has_voted,
+        'voters_ordered': voters_ordered,
+    })

@@ -3,24 +3,16 @@
 {% block title %}Vote in Poll {% endblock %}
 {% block content %}
 <div class="container">
+
   {% if not already_voted %}
   <h1 style="text-align: center; margin-top: 20px">Vote in Poll</h1>
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form
-        method="POST"
-        action="{% url 'vote_poll' voter_id=voter.id poll_id=poll.id %}"
-      >
+      <form method="POST" action="{% url 'vote_poll' voter_id=voter.id poll_id=poll.id %}">
         {% csrf_token %}
         <div class="mb-3">
           <label for="poll_question" class="form-label">Poll Question:</label>
-          <input
-            type="text"
-            class="form-control"
-            id="poll_question"
-            value="{{ poll.question }}"
-            readonly
-          />
+          <input type="text" class="form-control" id="poll_question" value="{{ poll.question }}" readonly />
         </div>
         <div class="mb-3">
           <label for="choices" class="form-label">Select your choice:</label>
@@ -36,10 +28,20 @@
         </center>
       </form>
       {% else %}
-      <div style="text-align: center; padding-top: 150px; color: red">
-        <h3>{{ message }}</h3>
-      </div>
+     
       {% endif %}
+      
+       <div class="container" style="margin-top:150px;text-align:center">
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+           
+        </div>
+    {% endfor %}
+{% endif %}
+
+</div>
     </div>
   </div>
 </div>

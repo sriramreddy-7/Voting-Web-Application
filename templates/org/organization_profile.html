@@ -1,0 +1,23 @@
+{% extends 'org/org_base.html' %} {% block title %}Organization Profile 
+{% endblock %} {% block content %}
+<div class="container">
+  <h1 class="text-center">{{ organization.name }} Profile</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h3>Organization Details</h3>
+        </div>
+        <div class="card-body">
+          <p><strong>Name:</strong> {{ organization.name }}</p>
+          <p><strong>Admin:</strong> {{ organization.admin.username }}</p>
+
+          <p><strong>Role:</strong> {{ organization.role }}</p>
+          <p><strong>ID Number:</strong> {{ organization.id_number }}</p>
+          <p><strong>Department:</strong> {{ organization.department }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

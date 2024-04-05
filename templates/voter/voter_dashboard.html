@@ -1,64 +1,43 @@
-{% extends 'voter/voter_base.html' %} {% block title %} {{voter.user.username }}
-Dashboard{% endblock %} {% block content %}
-<section class="main">
+{% extends 'voter/voter_base.html' %}
+
+{% block title %}
+  {{ voter.user.username }} Dashboard
+{% endblock %}
+
+{% block content %}
   <div class="container">
-    <div class="row">
-      <div class="col-md-4 col-xl-3">
-        <div class="card bg-c-blue order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Orders Received</h6>
-            <h2 class="text-right">
-              <i class="fas fa-poll-h"></i><span>486</span>
-            </h2>
-            <p class="m-b-0">
-              Completed Orders<span class="f-right">351</span>
-            </p>
-          </div>
-        </div>
+    <div class="card bg-secondary text-white">
+    <div class="card-body">
+      <h1 class="card-success">Welcome to {{ voter.user.username }}'s Dashboard!</h1>
+    </div>
+  </div>   
+    <div class="card">
+      <div class="card-header">
+        <h2>Voter Information</h2>
       </div>
-
-      <div class="col-md-4 col-xl-3">
-        <div class="card bg-c-green order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Orders Received</h6>
-            <h2 class="text-right">
-              <i class="fas fa-poll"></i><span> 486</span>
-            </h2>
-            <p class="m-b-0">
-              Completed Orders<span class="f-right">351</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4 col-xl-3">
-        <div class="card bg-c-yellow order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Orders Received</h6>
-            <h2 class="text-right">
-              <i class="fa fa-refresh f-left"></i><span>486</span>
-            </h2>
-            <p class="m-b-0">
-              Completed Orders<span class="f-right">351</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4 col-xl-3">
-        <div class="card bg-c-pink order-card">
-          <div class="card-block">
-            <h6 class="m-b-20">Orders Received</h6>
-            <h2 class="text-right">
-              <i class="fa fa-credit-card f-left"></i><span>486</span>
-            </h2>
-            <p class="m-b-0">
-              Completed Orders<span class="f-right">351</span>
-            </p>
-          </div>
-        </div>
+      <div class="card-body">
+        <p><strong>Name:</strong> {{ voter.user.get_full_name }}</p>
+        <p><strong>Username:</strong> {{ voter.user.username }}</p>
+        <p><strong>Email:</strong> {{ voter.user.email }}</p>
+        <p><strong>Organization:</strong> {{ voter.organization.name }}</p>
+       
       </div>
     </div>
+
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h2>Recent Votes</h2>
+      </div>
+      <div class="card-body">
+        <ul>
+          {% for vote in recent_votes %}
+            <li>{{ vote }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+   
   </div>
-</section>
 {% endblock %}

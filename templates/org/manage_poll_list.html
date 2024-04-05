@@ -19,7 +19,16 @@
 </style>
 
 <div class="container">
-  <h2 style="text-align: center; margin-top: 10px">Manage Poll's & Realtime Result's</h2>
+  <h2 style="text-align: center; margin-top: 10px">
+    Manage Poll's & Realtime Result's
+  </h2>
+  {% if messages %}
+  <div class="container">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
   <table class="table table-hover">
     <tr>
       <th>S.No</th>
@@ -32,13 +41,23 @@
       <th>{{ forloop.counter}}</th>
       <th>{{ poll.question }}</th>
       <th>
-        <a href="{% url 'org_vote_view' org_name=org_name poll_id=poll.id %}" class="btn btn-primary"
-          ><i class="fa fa-eye" aria-hidden="true"></i
-        >&nbsp;View</a> &nbsp;|&nbsp;
-        <a href="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}" class="btn btn-warning"
-          ><i class="fa fa-edit" aria-hidden="true"></i
-        >&nbsp;Edit</a> &nbsp;|&nbsp;
-        <a href="{% url 'poll_results' org_name=org_name poll_id=poll.id %}" class="btn btn-success"><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp;Result</a>
+        <a
+          href="{% url 'org_vote_view' org_name=org_name poll_id=poll.id %}"
+          class="btn btn-primary"
+          ><i class="fa fa-eye" aria-hidden="true"></i>&nbsp;View</a
+        >
+        &nbsp;|&nbsp;
+        <a
+          href="{% url 'edit_poll' org_name=org_name poll_id=poll.id %}"
+          class="btn btn-warning"
+          ><i class="fa fa-edit" aria-hidden="true"></i>&nbsp;Edit</a
+        >
+        &nbsp;|&nbsp;
+        <a
+          href="{% url 'poll_results' org_name=org_name poll_id=poll.id %}"
+          class="btn btn-success"
+          ><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp;Result</a
+        >
       </th>
     </tr>
     {% endfor %}

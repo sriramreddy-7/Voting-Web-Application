@@ -7,7 +7,7 @@ class Organization(models.Model):
     role = models.CharField(max_length=100)
     id_number = models.CharField(max_length=100, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
-    id_proof = models.ImageField(upload_to='id_proofs/', blank=True, null=True)
+    
 
     def __str__(self):
         return self.name
@@ -19,7 +19,7 @@ class Voter(models.Model):
     role = models.CharField(max_length=100)
     id_number = models.CharField(max_length=100, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
-    id_proof = models.ImageField(upload_to='voter_id_proofs/', blank=True, null=True)
+   
 
     def __str__(self):
         return self.user.username

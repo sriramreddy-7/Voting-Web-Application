@@ -37,8 +37,8 @@
         style="padding-top: 20px; padding-bottom: 20px"
       >
         <div class="container-fluid">
-          <a class="navbar-brand" href="#"
-            >{{ voter.user.first_name }}{{ voter.user.last_name }}</a
+          <a class="navbar-brand" href="{% url 'voter_dashboard' voter_id=voter.id %}"
+            >{{ voter.user.first_name }} {{ voter.user.last_name }}</a
           >
           <button
             class="navbar-toggler"
@@ -64,12 +64,7 @@
                   >Dashboard</a
                 >
               </li>
-              <!-- <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-              </li> -->
-              <!-- <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-              </li> -->
+             
               <li class="nav-item dropdown">
                 <a
                   class="nav-link dropdown-toggle"
@@ -84,56 +79,13 @@
                   <li>
                     <a class="dropdown-item" href="{% url 'active_polls_list' voter_id=voter.id %}">Active Polls</a>
                   </li>
-                  <li>
-                    <a class="dropdown-item" href="">Past Polls</a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">Results</a>
-                  </li>
+                
+                
                 </ul>
               </li>
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Survey
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                  <li><a class="dropdown-item" href="#">Active Survey</a></li>
-                  <!-- <li><a class="dropdown-item" href="#">Past Survey</a></li> -->
-                  <!-- <li>
-                    <a class="dropdown-item" href="#">Results</a>
-                  </li> -->
-                </ul>
-              </li>
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Feedback
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                  <li>
-                    <a class="dropdown-item" href="#">Active Feedback Sheet</a>
-                  </li>
-                  <!-- <li>
-                    <a class="dropdown-item" href="#">Manage Feedback Sheet</a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">Results</a>
-                  </li> -->
-                </ul>
-              </li>
+             
             </ul>
-            <!-- Right side dropdown -->
+           
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
                 <a
@@ -151,18 +103,8 @@
                       &nbsp;Logout</a
                     >
                   </li>
-                  <li>
-                    <a class="dropdown-item" href="#"
-                      ><i class="fa fa-user" aria-hidden="true"></i>&nbsp;View
-                      Profile</a
-                    >
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#"
-                      ><i class="fa fa-key" aria-hidden="true"></i>&nbsp;Change
-                      Password</a
-                    >
-                  </li>
+                
+                 
                 </ul>
               </li>
             </ul>
